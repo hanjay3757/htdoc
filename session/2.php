@@ -11,6 +11,7 @@ if (isset($_SESSION['s_age'])) {
     
 } else {
     echo "no  age session.<br>";
+    
 }
 
 

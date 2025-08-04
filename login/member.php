@@ -8,7 +8,7 @@
  * - 사용자 정보 표시
  */
 
-// ===== 기존 세션 기반 인증 (주석 처리) =====
+// ===== 기존 세션 기반 인증  =====
 /*
 session_start();
 if(isset($_SESSION['s_name']) && isset($_SESSION['s_age'])) {
@@ -46,6 +46,7 @@ if (!$token) {
     <script>
     alert('로그인 후 이용하세요.');
     window.location.href='index.php';
+
     </script>
     ";
     exit;
