@@ -1,0 +1,509 @@
+<!-- 
+  이 파일은 JWT 로그인 시스템 코드 리뷰 문서입니다.
+  각 부분별로 주석을 추가하여 설명합니다.
+-->
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JWT 로그인 시스템 코드 리뷰</title>
+    <style>
+      /* 전체 기본 스타일 초기화 */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      /* 바디 배경 및 폰트 설정 */
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.7;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      /* 메인 컨테이너 스타일 */
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      /* 헤더 영역 스타일 */
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .header p {
+        font-size: 1.2em;
+        opacity: 0.9;
+      }
+
+      /* 본문 컨텐츠 영역 */
+      .content {
+        padding: 40px;
+      }
+
+      /* 각 섹션 스타일 */
+      .section {
+        margin: 40px 0;
+        padding: 30px;
+        border-radius: 10px;
+        background: #f8f9fa;
+        border-left: 5px solid #667eea;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      .section h2 {
+        color: #333;
+        font-size: 1.8em;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .section h3 {
+        color: #555;
+        font-size: 1.4em;
+        margin: 25px 0 15px 0;
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 8px;
+      }
+
+      .section h4 {
+        color: #666;
+        font-size: 1.2em;
+        margin: 20px 0 10px 0;
+      }
+
+      /* 코드 블록 스타일 */
+      .code-block {
+        background: #2d3748;
+        color: #e2e8f0;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 15px 0;
+        overflow-x: auto;
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.5;
+        border: 1px solid #4a5568;
+      }
+
+      .code-block .comment {
+        color: #68d391;
+        font-style: italic;
+      }
+
+      .code-block .keyword {
+        color: #63b3ed;
+        font-weight: bold;
+      }
+
+      .code-block .string {
+        color: #feb2b2;
+      }
+
+      .code-block .number {
+        color: #fbb6ce;
+      }
+
+      /* 강조 박스 스타일 */
+      .highlight-box {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 20px 0;
+      }
+
+      /* 정보 박스 스타일 */
+      .info-box {
+        background: #e6fffa;
+        border: 1px solid #81e6d9;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+
+      /* 경고 박스 스타일 */
+      .warning-box {
+        background: #fed7d7;
+        border: 1px solid #fc8181;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+
+      /* 성공 박스 스타일 */
+      .success-box {
+        background: #c6f6d5;
+        border: 1px solid #68d391;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+
+      /* 리스트 스타일 */
+      ul,
+      ol {
+        margin: 15px 0;
+        padding-left: 30px;
+      }
+
+      li {
+        margin: 8px 0;
+      }
+
+      /* 파일 구조 박스 스타일 */
+      .file-structure {
+        background: #f7fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 20px;
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.8;
+      }
+
+      /* 비교 테이블 스타일 */
+      .comparison-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+
+      .comparison-table th,
+      .comparison-table td {
+        border: 1px solid #e2e8f0;
+        padding: 15px;
+        text-align: left;
+      }
+
+      .comparison-table th {
+        background: #667eea;
+        color: white;
+        font-weight: bold;
+      }
+
+      .comparison-table tr:nth-child(even) {
+        background: #f7fafc;
+      }
+
+      /* 푸터 스타일 */
+      .footer {
+        background: #2d3748;
+        color: white;
+        text-align: center;
+        padding: 30px;
+        margin-top: 40px;
+      }
+
+      /* 이모지 크기 */
+      .emoji {
+        font-size: 1.2em;
+      }
+
+      /* 인라인 코드 스타일 */
+      .code-inline {
+        background: #edf2f7;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: "Courier New", monospace;
+        font-size: 0.9em;
+      }
+
+      /* 반응형 스타일 */
+      @media (max-width: 768px) {
+        .container {
+          margin: 10px;
+          border-radius: 10px;
+        }
+
+        .header {
+          padding: 20px;
+        }
+
+        .header h1 {
+          font-size: 2em;
+        }
+
+        .content {
+          padding: 20px;
+        }
+
+        .section {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 메인 컨테이너 시작 -->
+    <div class="container">
+      <!-- 헤더 영역: 제목 및 설명 -->
+      <div class="header">
+        <h1>🔍 JWT 로그인 시스템 코드 리뷰</h1>
+        <p>상세한 코드 분석 및 개선 제안사항</p>
+      </div>
+
+      <div class="content">
+        <!-- 프로젝트 구조 설명 섹션 -->
+        <div class="section">
+          <h2><span class="emoji">📁</span>프로젝트 구조</h2>
+          <div class="file-structure">
+            <!-- 각 파일별 역할 주석 -->
+            login/ ├── 📄 index.php <br /># 로그인 폼 (메인 페이지) ├── 📄
+            login.js
+            <br />
+            #프론트엔드 JavaScript (AJAX 처리) ├── 📄 login_ok.php <br />#
+            백엔드 PHP (JWT 토큰 생성) ├── 📄 member.php <br /># 회원 전용
+            페이지 (JWT 토큰 검증) ├── 📄 logout.php <br />
+            # 로그아웃 처리 ├── 📄 composer.json <br />
+            # PHP 의존성 관리 ├── 📁 vendor/ <br /># JWT 라이브러리
+            (firebase/php-jwt) ├── 📄 text.html # 시스템 설명서
+          </div>
+        </div>
+
+        <!-- 각 파일별 상세 분석 섹션 -->
+        <div class="section">
+          <h2><span class="emoji">🔧</span>각 파일별 상세 분석</h2>
+
+          <!-- index.php 설명 -->
+          <h3>1. index.php - 로그인 폼</h3>
+          <div class="code-block">
+            &lt;!-- index.php --&gt;<br />
+            &lt;form action="login_ok.php" name="login_form" method="post"&gt;
+            <br />
+            &lt;input type="text" name="id" id="id" required&gt;
+            <span class="comment">// 아이디 입력 필드</span><br />
+            &lt;input type="password" name="pw" id="pw" required&gt;
+            <span class="comment">// 비밀번호 입력 필드</span><br />
+            &lt;button id="login_btn" type="submit"&gt;로그인&lt;/button&gt;
+            <span class="comment">// 로그인 버튼</span>
+            <br />&lt;/form&gt;
+          </div>
+
+          <div class="success-box">
+            <h4>✅ 장점:</h4>
+            <ul>
+              <li>간단하고 명확한 HTML 구조</li>
+              <li>적절한 form validation (required 속성)</li>
+              <li>JavaScript 파일 연결</li>
+            </ul>
+          </div>
+
+          <!-- login.js 설명 -->
+          <h3>2. login.js - 프론트엔드 로직</h3>
+          <div class="code-block">
+            <span class="comment">// login.js</span><br />
+            btn.addEventListener("click", async (e) =&gt; { e.preventDefault();
+            <span class="comment">// 폼 기본 제출 방지</span><br />
+
+            <span class="comment">// 입력값 검증 - 빈 값 체크</span><br />
+            if (id.value == "" || pw.value == "") { alert("아이디와 비밀번호를
+            입력해주세요."); return false; }<br />
+
+            <span class="comment"
+              >// 서버에 JSON 형태로 데이터 전송 (AJAX 요청)</span
+            ><br />
+            const res = await fetch("login_ok.php", { method: "POST", headers: {
+            "Content-Type": "application/json" },<br />
+            body: JSON.stringify({ id: id.value, pw: pw.value }) }); });
+          </div>
+
+          <div class="success-box">
+            <h4>✅ 장점:</h4>
+            <ul>
+              <li>현대적인 async/await 사용</li>
+              <li>적절한 입력값 검증 (빈 값, 길이 체크)</li>
+              <li>에러 처리 구현</li>
+              <li>JWT 토큰 이중 저장 (localStorage + cookie)</li>
+            </ul>
+          </div>
+
+          <!-- login_ok.php 설명 -->
+          <h3>3. login_ok.php - 백엔드 인증</h3>
+          <br />
+          <div class="code-block">
+            <span class="comment">// login_ok.php</span><br />
+            if ($id == 'guest' && $pw == '1234') {
+            <span class="comment">// 하드코딩된 테스트 계정 검증</span><br />
+            $key = 'your_secret_key';
+            <span class="comment">// JWT 서명용 비밀키 (보안 위험!)</span><br />
+            $payload = [ 'id' =&gt; $id,
+            <span class="comment">// 사용자 ID를 토큰에 포함</span><br />
+            'exp' =&gt; time() + 3600
+            <span class="comment">// 1시간 후 만료</span> ]; <br />$jwt =
+            JWT::encode($payload, $key, 'HS256');
+            <span class="comment">// JWT 토큰 생성</span><br />
+            echo json_encode(['token' =&gt; $jwt]);
+            <span class="comment">// JSON 형태로 토큰 반환</span>
+            }
+          </div>
+
+          <div class="success-box">
+            <h4>✅ 장점:</h4>
+            <ul>
+              <li>JWT 라이브러리 적절히 사용</li>
+              <li>에러 처리 및 로깅 구현</li>
+              <li>JSON 응답 형식 일관성</li>
+              <li>GET/POST 방식 모두 지원</li>
+            </ul>
+          </div>
+
+          <!-- member.php 설명 -->
+          <h3>4. member.php - 회원 페이지</h3>
+          <div class="code-block">
+            <span class="comment">// member.php</span>
+            $token = $_COOKIE['jwt'] ?? null;
+            <span class="comment">// 쿠키에서 JWT 토큰 가져오기</span><br />
+
+            try { $key = 'your_secret_key';
+            <span class="comment">// login_ok.php와 동일한 비밀키</span>
+            $decoded = JWT::decode($token, new Key($key, 'HS256'));
+            <span class="comment">// 토큰 검증</span> <br />
+
+            <span class="comment">// 만료 시간 확인</span> <br />
+            if (isset($decoded-&gt;exp) && $decoded-&gt;exp &lt; time()) {
+            <span class="comment"
+              >// 토큰 만료 시 로그인 페이지로 리다이렉트</span
+            ><br />
+            echo "&lt;script&gt;alert('로그인이
+            만료되었습니다.');&lt;/script&gt;"; exit; } <br />$user_id =
+            $decoded-&gt;id;
+            <span class="comment">// 토큰에서 사용자 ID 추출</span><br />
+            } catch (Exception $e) {
+            <span class="comment"
+              >// 토큰이 유효하지 않으면 로그인 페이지로 리다이렉트</span
+            ><br />
+            echo "&lt;script&gt;alert('유효하지 않은
+            토큰입니다.');&lt;/script&gt;"; exit; }
+          </div>
+
+          <div class="success-box">
+            <h4>✅ 장점:</h4>
+            <ul>
+              <li>JWT 토큰 검증 로직 구현</li>
+              <li>만료 시간 확인</li>
+              <li>XSS 방지 (htmlspecialchars 사용)</li>
+              <li>적절한 리다이렉트 처리</li>
+            </ul>
+          </div>
+
+          <!-- logout.php 설명 -->
+          <h3>5. logout.php - 로그아웃</h3>
+          <div class="code-block">
+            <span class="comment">// logout.php</span>
+            setcookie("jwt", "", time() - 3600, "/");
+            <span class="comment">// 쿠키에서 JWT 토큰 삭제</span>
+          </div>
+
+          <div class="success-box">
+            <h4>✅ 장점:</h4>
+            <ul>
+              <li>쿠키 삭제 로직 구현</li>
+              <li>적절한 리다이렉트</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 보안 분석 섹션 -->
+        <div class="section">
+          <h2><span class="emoji">🛡️</span>보안 분석</h2>
+
+          <div class="success-box">
+            <h3>✅ 구현된 보안 기능</h3>
+            <ul>
+              <li><strong>JWT 서명 검증</strong> - HS256 알고리즘 사용</li>
+              <li><strong>토큰 만료 시간</strong> - 1시간 후 자동 만료</li>
+              <li><strong>XSS 방지</strong> - htmlspecialchars 사용</li>
+              <li>
+                <strong>입력값 검증</strong> - 클라이언트/서버 양쪽에서 검증
+              </li>
+            </ul>
+          </div>
+
+          <div class="warning-box">
+            <h3>⚠️ 보안 취약점</h3>
+            <ul>
+              <li><strong>하드코딩된 비밀키</strong> - 환경변수로 관리 필요</li>
+              <li><strong>하드코딩된 계정</strong> - 데이터베이스 연동 필요</li>
+              <li><strong>비밀번호 평문 저장</strong> - 해싱 필요</li>
+              <li><strong>CSRF 보호 없음</strong> - CSRF 토큰 구현 필요</li>
+              <li>
+                <strong>토큰 블랙리스트 없음</strong> - 로그아웃 시 토큰 무효화
+                필요
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 전체 평가 섹션 -->
+        <div class="section">
+          <h2><span class="emoji">🎯</span>전체 평가</h2>
+
+          <div class="success-box">
+            <h3>✅ 잘 구현된 부분:</h3>
+            <ul>
+              <li>JWT 기반 인증 시스템의 기본 구조</li>
+              <li>클라이언트-서버 간 통신 로직</li>
+              <li>토큰 기반 인증의 핵심 개념 구현</li>
+              <li>코드 구조의 명확성</li>
+            </ul>
+          </div>
+
+          <div class="info-box">
+            <h3>다음 단계:</h3>
+            <ol>
+              <li>보안 취약점 수정</li>
+              <li>데이터베이스 연동</li>
+              <li>사용자 관리 기능 추가</li>
+              <li>테스트 코드 작성</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- 핵심 개선사항 요약 섹션 -->
+        <div class="section">
+          <h2><span class="emoji">💡</span>핵심 개선사항 요약</h2>
+
+          <div class="highlight-box">
+            <h3>🔐 보안 우선순위</h3>
+            <ol>
+              <li><strong>환경변수로 비밀키 관리</strong> - 하드코딩 제거</li>
+              <li><strong>비밀번호 해싱</strong> - password_hash() 사용</li>
+              <li><strong>CSRF 토큰 구현</strong> - 공격 방지</li>
+              <li><strong>입력값 sanitization</strong> - XSS/인젝션 방지</li>
+              <li><strong>토큰 블랙리스트</strong> - 로그아웃 시 무효화</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <!-- 푸터 영역 -->
+      <div class="footer">
+        <h3>JWT 로그인 시스템 코드 리뷰</h3>
+        <p>상세한 코드 분석 및 개선 제안사항</p>
+        <p>© 2024 - JSON Web Token 기반 로그인 시스템</p>
+      </div>
+    </div>
+    <!-- 메인 컨테이너 끝 -->
+  </body>
+</html>
