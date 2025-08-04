@@ -1,42 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>과일 정보</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff;
+            padding: 30px;
+        }
+
+        .fruit {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-left: 8px solid #ffa500;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            width: 300px;
+        }
+
+        .fruit h2 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+
+        .fruit p {
+            margin: 0;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
 <?php
-class Fruits{
+class Fruits {
     public $name;
     public $color;
 
-    // set_name 메서드를 Fruits 클래스 안에 넣기
-     function set_name($name){
+    function set_name($name){
         $this->name = $name;
     }
 
-    // get_name 메서드를 Fruits 클래스 안에 넣기
-     function get_name(){
+    function get_name(){
         return $this->name;
     }
+
     function get_color(){
         return $this->color;
     }
 
-    //생성사 constructor
-    function __construct($name,$color){
+    function __construct($name, $color){
         $this->name = $name;
         $this->color = $color;
     }
 }
 
-$apple = new Fruits("사과","red");
-$banana = new Fruits("바나나","yellow");
-echo "이 과일의 이름은 " . $apple->get_name();
-echo  "이고 색깔은 " . $apple->get_color() . "입니다.<br>";
-echo "이 과일의 이름은 " . $banana->get_name();
-echo  "이고 색깔은 " . $banana->get_color() . "입니다.<br>";
-// $apple->set_name('Apple');
-// $banana->set_name('Banana');
+$apple = new Fruits("사과", "red");
+$banana = new Fruits("바나나", "yellow");
 
-// // echo $apple->get_name();  // Apple 출력
-// // echo "<br>";
-// // echo $bababa ->get_name();
+function displayFruit($fruit) {
+    echo "<div class='fruit'>";
+    echo "<h2>" . $fruit->get_name() . "</h2>";
+    echo "<p>색깔: " . $fruit->get_color() . "</p>";
+    echo "</div>";
+}
 
+displayFruit($apple);
+displayFruit($banana);
+?>
 
-// echo $banana->name; //publi 속성이라 접근 가능
-// echo $banana->get_name(); //publi 속성이라 접근 가능
-// ?>
+</body>
+</html>
