@@ -29,7 +29,7 @@ if (isset($_SESSION['status'])) {
                         <hr>
                         <div class="main-comment">
                             <textarea class="comment_textbox form-control mb-1" rows="3"></textarea>
-                            <button type="button" class="btn btn-primary add_comment_btn mt-2">Comment</button>
+                            <button type="button" class="btn btn-primary add_comment_btn">Comment</button>
                         </div>
                         <hr>
                     </div>
