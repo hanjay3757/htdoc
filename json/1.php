@@ -10,7 +10,7 @@ $json = `{"peter":35, "ben":37, "joe":43}`;
 // echo $obj->peter;
 $json = '{"peter":35, "ben":37, "joe":43}';
 $arr = json_decode($json, true);
-// echo $arr["peter"];÷
+// echo $arr["peter"];
 foreach($arr as $key => $value){
     echo $key. "는" . $value . "<br>";
 }

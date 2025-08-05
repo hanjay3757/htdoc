@@ -12,7 +12,7 @@ $password = "";
 //     echo $conn->connect_error;
 //     exit();
 // }echo "DB 연결에 성공했습니다.";
-
+ 
 
 //2 $conn = mysqli_connect($servername, $username, $password);
 
