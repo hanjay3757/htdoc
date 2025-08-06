@@ -31,7 +31,7 @@ $(document).ready(function () {
               html +=
                 '<div class="' +
                 borderColor +
-                " p-2 mb-1 comment-box " +
+                " pl-2 pt-2 mb-1 comment-box " +
                 depthClass +
                 '" style="margin-left: ' +
                 marginLeft +
@@ -50,7 +50,7 @@ $(document).ready(function () {
                 '</small>\
         </div>\
         <div class="comment-buttons">\
-            <button class="btn btn-sm btn-outline-warning me-1 reply_btn" data-comment-id="' +
+            <button class="btn btn-sm btn-outline-warning reply_btn" data-comment-id="' +
                 comment.id +
                 '" data-depth="' +
                 depth +
@@ -58,18 +58,19 @@ $(document).ready(function () {
 
               if (comment.children && comment.children.length > 0) {
                 html +=
-                  '<button class="btn btn-sm btn-outline-info toggle_children_btn" data-comment-id="' +
+                  '<button class=" btn btn-sm btn-outline-info toggle_children_btn" data-comment-id="' +
                   comment.id +
                   '">답글 보기 (' +
                   comment.children.length +
                   ")</button>";
               }
 
-              html += '</div>\
+              html +=
+                '</div>\
     </div>\
     <p class="para mt-2 mb-1">' +
                 comment.msg +
-                '</p>';
+                "</p>";
               html += '<div class="reply_section mt-2"></div>';
 
               if (comment.children && comment.children.length > 0) {
