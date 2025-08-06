@@ -1,8 +1,10 @@
+<?php session_start();
+?>
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container">
     <!-- 왼쪽 로고 -->
-    <a class="navbar-brand" href="#">Navbar</a>
+    <a class="navbar-brand" href="#">Navbars</a>
 
     <!-- 모바일용 버튼 -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse"

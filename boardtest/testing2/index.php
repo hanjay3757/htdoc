@@ -28,6 +28,7 @@ if (isset($_SESSION['status'])) {
                         <p>이 페이지는 JWT 인증을 사용하여 보호됩니다.</p>
                         <hr>
                         <div class="main-comment">
+                            <div id="error_status"></div>
                             <textarea class="comment_textbox form-control mb-1" rows="3"></textarea>
                             <button type="button" class="btn btn-primary add_comment_btn">Comment</button>
                         </div>
