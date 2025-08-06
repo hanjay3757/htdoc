@@ -33,6 +33,10 @@ if (isset($_SESSION['status'])) {
                             <button type="button" class="btn btn-primary add_comment_btn">Comment</button>
                         </div>
                         <hr>
+
+                        <div class="comment-container">
+
+                        </div>
                     </div>
                 </div>
             </div>
