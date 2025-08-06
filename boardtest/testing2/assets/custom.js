@@ -23,19 +23,12 @@ $(document).ready(function () {
           function renderCommentTree(comments, depth = 0) {
             var html = "";
             $.each(comments, function (key, comment) {
-              var marginLeft = depth * 30;
               var depthClass = "depth-" + depth;
-              var borderColor =
-                depth > 0 ? "border-left border-primary" : "border";
 
               html +=
-                '<div class="' +
-                borderColor +
-                " pl-2 pt-2 mb-1 comment-box " +
+                '<div class="comment-box ' +
                 depthClass +
-                '" style="margin-left: ' +
-                marginLeft +
-                'px;" data-comment-id="' +
+                '" data-comment-id="' +
                 comment.id +
                 '" data-depth="' +
                 depth +

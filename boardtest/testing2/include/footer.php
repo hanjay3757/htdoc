@@ -3,7 +3,7 @@
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <!-- Custom JS -->
-    <script src="/boardtest/testing2/assets/custom.js"></script>
+    <script src="assets/custom.js"></script>
     </body>
 
     </html>
