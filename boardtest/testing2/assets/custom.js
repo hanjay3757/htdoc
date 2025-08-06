@@ -122,6 +122,7 @@ $(document).ready(function () {
                             <button class="btn btn-sm btn-success reply_add_btn" data-parent-id="' +
         cmt_id +
         '" data-depth="' +
+        // 답글 달때  comment_id와 parent_id가 같게 설정
         (currentDepth + 1) +
         '">답글 달기</button>\
                             <button class="btn btn-sm btn-outline-secondary reply_cancel_btn">취소</button>\

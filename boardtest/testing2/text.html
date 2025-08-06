@@ -1,0 +1,7 @@
+데이터 흐름: PHP에서 데이터 구조화 (= comment_tree): 정리된 데이터를 꺼내는 곳:
+JavaScript의 renderCommentTree 함수 => (custom.js 23-88줄)에서 comment_tree
+데이터를 꺼내서 HTML로 렌더링합니다: response 매개변수로 PHP에서 보낸
+comment_tree 데이터를 받음 재귀적으로 comment.children을 처리하여 계층 구조 표시
+depth 값으로 들여쓰기 조절 (marginLeft = depth * 30) 각 댓글의 답글 버튼과 답글
+개수 표시 즉, PHP에서 parent_id를 기반으로 계층 구조를 만들어 JSON으로 보내고,
+JavaScript에서 그 구조화된 데이터를 받아서 화면에 렌더링하는 방식입니다!
