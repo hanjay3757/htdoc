@@ -3,7 +3,6 @@ session_start();
 include("dbcon.php");
 
 if (isset($_POST["comment_load_data"])) {
-    // 새로운 통합 댓글 시스템: depth를 사용하여 계층 구조 관리
     $comments_query = "SELECT c.*, u.fullname FROM comments c LEFT JOIN users u ON c.user_id = u.id ORDER BY c.parent_id ASC, c.id ASC";
     $comments_query_run = mysqli_query($con, $comments_query);
 
@@ -11,7 +10,6 @@ if (isset($_POST["comment_load_data"])) {
     $comment_tree = [];
 
     if (mysqli_num_rows($comments_query_run) > 0) {
-        // 모든 댓글을 배열로 가져오기
         $all_comments = [];
         while ($row = mysqli_fetch_assoc($comments_query_run)) {
             $all_comments[] = $row;
@@ -45,7 +43,6 @@ if (isset($_POST['add_comment'])) {
     $user_id = $_SESSION['auth_user_id'];
     $parent_id = isset($_POST['parent_id']) ? (int)$_POST['parent_id'] : 0;
 
-    // 입력값 검증
     if (empty(trim($msg))) {
         echo "Comment message cannot be empty.";
         exit;
@@ -65,6 +62,3 @@ if (isset($_POST['add_comment'])) {
         echo "Failed to add comment: " . mysqli_error($con);
     }
 }
-
-// 기존의 add_reply와 add_sub_reply는 통합된 add_comment로 대체됨
-// parent_id를 사용하여 모든 답글을 처리함

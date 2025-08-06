@@ -55,37 +55,75 @@
   border-radius: 0 4px 4px 0;
 }
 
-/* 답글 버튼 스타일 */
-.reply_btn {
-  background: linear-gradient(45deg, #ffc107, #fd7e14);
-  border: none;
-  color: white;
+/* 댓글 헤더 스타일 */
+.comment-header {
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+.comment-buttons {
+  display: flex;
+  gap: 5px;
+}
+
+/* 답글 버튼 스타일 - 통일된 디자인 */
+.reply_btn, .toggle_children_btn {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
   transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.reply_btn:hover, .toggle_children_btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.reply_btn {
+  border-color: #ffc107;
+  color: #ffc107;
 }
 
 .reply_btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.4);
+  background-color: #ffc107;
+  color: white;
 }
 
 .toggle_children_btn {
-  background: linear-gradient(45deg, #17a2b8, #007bff);
-  border: none;
-  color: white;
-  transition: all 0.2s ease;
+  border-color: #17a2b8;
+  color: #17a2b8;
 }
 
 .toggle_children_btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 2px 8px rgba(23, 162, 184, 0.4);
+  background-color: #17a2b8;
+  color: white;
 }
 
 /* 댓글 입력 폼 스타일 */
 .reply_section {
-  background-color: rgba(0, 123, 255, 0.05);
-  border-radius: 6px;
-  padding: 10px;
   margin-top: 10px;
+}
+
+.reply-form {
+  background-color: rgba(0, 123, 255, 0.05);
+  border-radius: 8px;
+  border-left: 3px solid #007bff;
+}
+
+.reply-form .form-control {
+  border: 1px solid #ced4da;
+  transition: border-color 0.2s ease;
+}
+
+.reply-form .form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.reply-form .btn {
+  min-width: 80px;
 }
 
 /* 애니메이션 효과 */
