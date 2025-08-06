@@ -18,7 +18,7 @@ if (isset($_SESSION['status'])) {
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header mt-2">
                         <h4>test</h4>
                     </div>
                     <div class="card-body">
@@ -34,9 +34,7 @@ if (isset($_SESSION['status'])) {
                         </div>
                         <hr>
 
-                        <div class="comment-container">
-
-                        </div>
+                        <div class="comment-container"></div>
                     </div>
                 </div>
             </div>
