@@ -33,7 +33,7 @@ $(document).ready(function () {
                 '" data-depth="' +
                 depth +
                 '">\
-    <div class="comment-header d-flex justify-content-between align-items-center">\
+    <div class="comment-header ">\
         <div>\
             <h6 class="d-inline mb-0">' +
                 (comment.fullname || "Unknown User") +
@@ -64,6 +64,17 @@ $(document).ready(function () {
     <p class="para mt-2 mb-1">' +
                 comment.msg +
                 "</p>";
+              
+              // 좋아요 버튼 추가
+              var likedClass = comment.user_liked == 1 ? 'liked' : '';
+              var heartIcon = comment.user_liked == 1 ? '❤️' : '🤍';
+              html += '<div class="like-section mt-2 mb-2">\
+                        <button class="like-btn ' + likedClass + '" data-comment-id="' + comment.id + '">\
+                          <span class="heart-icon">' + heartIcon + '</span>\
+                          <span class="like-count">' + (comment.likes_count || 0) + '</span>\
+                        </button>\
+                      </div>';
+              
               html += '<div class="reply_section mt-2"></div>';
 
               if (comment.children && comment.children.length > 0) {
@@ -102,12 +113,15 @@ $(document).ready(function () {
     var thisClicked = $(this);
     var cmt_id = thisClicked.data("comment-id");
     var currentDepth = parseInt(thisClicked.data("depth"));
-    var replySection = thisClicked
-      .closest(".comment-box")
-      .find(".reply_section");
 
+    // 현재 댓글 박스의 직접적인 reply_section만 선택 (자식 댓글의 reply_section 제외)
+    var currentCommentBox = thisClicked.closest(".comment-box");
+    var replySection = currentCommentBox.children(".reply_section");
+
+    // 모든 답글창 닫기
     $(".reply_section").html("");
 
+    // 현재 댓글에만 답글창 열기
     replySection.html(
       '<div class="reply-form p-3">\
                         <input type="text" class="reply_msg form-control mb-2" placeholder="답글을 입력하세요...">\
@@ -115,7 +129,6 @@ $(document).ready(function () {
                             <button class="btn btn-sm btn-success reply_add_btn" data-parent-id="' +
         cmt_id +
         '" data-depth="' +
-        // 답글 달때  comment_id와 parent_id가 같게 설정
         (currentDepth + 1) +
         '">답글 달기</button>\
                             <button class="btn btn-sm btn-outline-secondary reply_cancel_btn">취소</button>\
@@ -159,6 +172,52 @@ $(document).ready(function () {
       },
     });
   });
+
+  // 좋아요 버튼 클릭 이벤트
+  $(document).on("click", ".like-btn", function () {
+    var thisClicked = $(this);
+    var commentId = thisClicked.data("comment-id");
+    
+    $.ajax({
+      type: "POST",
+      url: "code.php",
+      data: {
+        toggle_like: true,
+        comment_id: commentId
+      },
+      dataType: "json",
+      success: function (response) {
+        if (response.error) {
+          alert(response.error);
+          return;
+        }
+        
+        // 하트 아이콘과 카운트 업데이트
+        var heartIcon = thisClicked.find('.heart-icon');
+        var likeCount = thisClicked.find('.like-count');
+        
+        if (response.liked) {
+          heartIcon.text('❤️');
+          thisClicked.addClass('liked');
+        } else {
+          heartIcon.text('🤍');
+          thisClicked.removeClass('liked');
+        }
+        
+        likeCount.text(response.likes_count);
+        
+        // 버튼 애니메이션 효과
+        thisClicked.addClass('like-animation');
+        setTimeout(function() {
+          thisClicked.removeClass('like-animation');
+        }, 300);
+      },
+      error: function (xhr, status, error) {
+        alert("좋아요 처리 실패: " + error);
+      }
+    });
+  });
+
   // 댓글 숨기기/보이기 기능
   $(document).on("click", ".toggle_children_btn", function () {
     var thisClicked = $(this);
@@ -166,12 +225,12 @@ $(document).ready(function () {
     var childrenContainer = $("#children-" + commentId);
 
     if (childrenContainer.is(":visible")) {
-      childrenContainer.hide();
+      childrenContainer.slideUp(500);
       thisClicked.text(
         "답글 보기 (" + childrenContainer.find(".comment-box").length + ")"
       );
     } else {
-      childrenContainer.show();
+      childrenContainer.slideDown(500);
       thisClicked.text("답글 숨기기");
     }
   });

@@ -3,7 +3,15 @@ session_start();
 include("dbcon.php");
 
 if (isset($_POST["comment_load_data"])) {
-    $comments_query = "SELECT c.*, u.fullname FROM comments c LEFT JOIN users u ON c.user_id = u.id ORDER BY c.parent_id ASC, c.id ASC";
+    $user_id = isset($_SESSION['auth_user_id']) ? $_SESSION['auth_user_id'] : 0;
+
+    // 댓글과 좋아요 정보를 함께 가져오기
+    $comments_query = "SELECT c.*, u.fullname, c.likes_count,
+                       CASE WHEN cl.user_id IS NOT NULL THEN 1 ELSE 0 END as user_liked
+                       FROM comments c 
+                       LEFT JOIN users u ON c.user_id = u.id 
+                       LEFT JOIN comment_likes cl ON c.id = cl.comment_id AND cl.user_id = '$user_id'
+                       ORDER BY c.parent_id ASC, c.id ASC";
     $comments_query_run = mysqli_query($con, $comments_query);
 
     $array_result = [];
@@ -61,4 +69,52 @@ if (isset($_POST['add_comment'])) {
     } else {
         echo "Failed to add comment: " . mysqli_error($con);
     }
+}
+
+// 좋아요 토글 기능
+if (isset($_POST['toggle_like'])) {
+    $comment_id = (int)$_POST['comment_id'];
+    $user_id = $_SESSION['auth_user_id'];
+
+    if (empty($user_id)) {
+        echo json_encode(['error' => 'User not logged in']);
+        exit;
+    }
+
+    // 현재 좋아요 상태 확인
+    $check_like = "SELECT id FROM comment_likes WHERE comment_id = '$comment_id' AND user_id = '$user_id'";
+    $check_result = mysqli_query($con, $check_like);
+
+    if (mysqli_num_rows($check_result) > 0) {
+        // 좋아요 제거
+        $delete_like = "DELETE FROM comment_likes WHERE comment_id = '$comment_id' AND user_id = '$user_id'";
+        mysqli_query($con, $delete_like);
+
+        // 좋아요 수 감소
+        $update_count = "UPDATE comments SET likes_count = likes_count - 1 WHERE id = '$comment_id'";
+        mysqli_query($con, $update_count);
+
+        $liked = false;
+    } else {
+        // 좋아요 추가
+        $add_like = "INSERT INTO comment_likes (comment_id, user_id) VALUES ('$comment_id', '$user_id')";
+        mysqli_query($con, $add_like);
+
+        // 좋아요 수 증가
+        $update_count = "UPDATE comments SET likes_count = likes_count + 1 WHERE id = '$comment_id'";
+        mysqli_query($con, $update_count);
+
+        $liked = true;
+    }
+
+    // 현재 좋아요 수 가져오기
+    $get_count = "SELECT likes_count FROM comments WHERE id = '$comment_id'";
+    $count_result = mysqli_query($con, $get_count);
+    $count_row = mysqli_fetch_assoc($count_result);
+
+    header('Content-Type: application/json');
+    echo json_encode([
+        'liked' => $liked,
+        'likes_count' => (int)$count_row['likes_count']
+    ]);
 }
