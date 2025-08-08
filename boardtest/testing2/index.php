@@ -29,8 +29,23 @@ if (isset($_SESSION['status'])) {
                         <hr>
                         <div class="main-comment">
                             <div id="error_status"></div>
-                            <textarea class="comment_textbox form-control mb-5" rows="8"></textarea>
-                            <button type="button" class="btn btn-primary add_comment_btn">Comment</button>
+                            <textarea class="comment_textbox form-control mb-3" rows="6" placeholder="댓글을 입력하세요..."></textarea>
+
+                            <!-- 미디어 파일 업로드 영역 -->
+                            <div class="media-upload-section mb-3">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <label for="media-files" class="btn btn-outline-secondary btn-sm">
+                                        <i class="fas fa-paperclip"></i> 파일 첨부
+                                    </label>
+                                    <input type="file" id="media-files" multiple accept="image/*,video/*,.gif" style="display: none;">
+                                    <small class="text-muted">이미지, 영상, GIF 파일을 업로드할 수 있습니다 (최대 10MB)</small>
+                                </div>
+
+                                <!-- 선택된 파일 미리보기 -->
+                                <div id="media-preview" class="media-preview-container"></div>
+                            </div>
+
+                            <button type="button" class="btn btn-primary add_comment_btn">댓글 작성</button>
                         </div>
                         <hr>
 
@@ -41,5 +56,8 @@ if (isset($_SESSION['status'])) {
         </div>
     </div>
 </div>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <?php include('include/footer.php'); ?>
