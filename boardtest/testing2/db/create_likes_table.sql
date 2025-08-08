@@ -13,4 +13,4 @@ CREATE TABLE comment_likes (
 ALTER TABLE comments ADD COLUMN likes_count INT DEFAULT 0;
 
 -- 기존 댓글들의 likes_count 초기화
-UPDATE comments SET likes_count = 0;
+-- UPDATE comments SET likes_count = 0;

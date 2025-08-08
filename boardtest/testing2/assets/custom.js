@@ -67,10 +67,11 @@ $(document).ready(function () {
               
               // 좋아요 버튼 추가
               var likedClass = comment.user_liked == 1 ? 'liked' : '';
-              var heartIcon = comment.user_liked == 1 ? '❤️' : '🤍';
+              var heartIconSrc = comment.user_liked == 1 ? 'img/thumbsUp.png' : 'img/thumbsUp.png';
+              var heartIconClass = comment.user_liked == 1 ? 'heart-icon liked-heart' : 'heart-icon unliked-heart';
               html += '<div class="like-section mt-2 mb-2">\
                         <button class="like-btn ' + likedClass + '" data-comment-id="' + comment.id + '">\
-                          <span class="heart-icon">' + heartIcon + '</span>\
+                          <img src="' + heartIconSrc + '" class="' + heartIconClass + '" width="20" height="20" alt="like">\
                           <span class="like-count">' + (comment.likes_count || 0) + '</span>\
                         </button>\
                       </div>';
@@ -197,10 +198,10 @@ $(document).ready(function () {
         var likeCount = thisClicked.find('.like-count');
         
         if (response.liked) {
-          heartIcon.text('❤️');
+          heartIcon.removeClass('unliked-heart').addClass('liked-heart');
           thisClicked.addClass('liked');
         } else {
-          heartIcon.text('🤍');
+          heartIcon.removeClass('liked-heart').addClass('unliked-heart');
           thisClicked.removeClass('liked');
         }
         
