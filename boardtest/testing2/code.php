@@ -65,7 +65,7 @@ if (isset($_POST['add_comment'])) {
     error_log("POST 데이터: " . print_r($_POST, true));
     error_log("FILES 데이터: " . print_r($_FILES, true));
     error_log("세션 데이터: " . print_r($_SESSION, true));
-    
+
     $msg = mysqli_real_escape_string($con, $_POST['msg']);
     $user_id = $_SESSION['auth_user_id'];
     $parent_id = isset($_POST['parent_id']) ? (int)$_POST['parent_id'] : 0;
@@ -88,10 +88,10 @@ if (isset($_POST['add_comment'])) {
     $has_media = !empty($_FILES['media_files']['name'][0]) ? 1 : 0;
     error_log("미디어 파일 여부: " . $has_media);
 
-        // 댓글 추가
+    // 댓글 추가
     $comment_add_query = "INSERT INTO comments (user_id, msg, parent_id, has_media) VALUES ('$user_id', '$msg', '$parent_id', '$has_media')";
     error_log("댓글 추가 쿼리: " . $comment_add_query);
-    
+
     $comment_add_query_run = mysqli_query($con, $comment_add_query);
 
     if ($comment_add_query_run) {
@@ -101,20 +101,20 @@ if (isset($_POST['add_comment'])) {
         // 미디어 파일 처리
         if ($has_media) {
             error_log("미디어 파일 처리 시작");
-            
+
             try {
                 $media_handler = new MediaHandler();
                 error_log("MediaHandler 생성 성공");
-                
+
                 $upload_result = $media_handler->uploadFiles($_FILES['media_files']);
                 error_log("업로드 결과: " . print_r($upload_result, true));
-                
+
                 if ($upload_result['success']) {
                     error_log("파일 업로드 성공, DB 저장 시작");
                     // 데이터베이스에 미디어 파일 정보 저장
                     foreach ($upload_result['files'] as $file) {
                         error_log("파일 정보 저장: " . print_r($file, true));
-                        
+
                         $insert_media = "INSERT INTO comment_media (comment_id, file_name, original_name, file_type, file_size, file_path, thumbnail_path, mime_type) 
                                         VALUES ('$comment_id', '" . mysqli_real_escape_string($con, $file['filename']) . "', 
                                                '" . mysqli_real_escape_string($con, $file['original_name']) . "', 
@@ -122,9 +122,9 @@ if (isset($_POST['add_comment'])) {
                                                '" . mysqli_real_escape_string($con, $file['file_path']) . "', 
                                                '" . mysqli_real_escape_string($con, $file['thumbnail_path']) . "', 
                                                '" . mysqli_real_escape_string($con, $file['mime_type']) . "')";
-                        
+
                         error_log("미디어 DB 저장 쿼리: " . $insert_media);
-                        
+
                         $media_result = mysqli_query($con, $insert_media);
                         if (!$media_result) {
                             error_log("미디어 DB 저장 실패: " . mysqli_error($con));
