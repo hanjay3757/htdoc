@@ -15,8 +15,8 @@ class MediaHandler
 
     public function __construct()
     {
-        $this->upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/boardtest/testing2/uploads/media/';
-        $this->thumbnail_dir = $_SERVER['DOCUMENT_ROOT'] . '/boardtest/testing2/uploads/thumbnails/';
+        $this->upload_dir = '/Applications/XAMPP/xamppfiles/htdocs/boardtest/testing2/uploads/media/';
+        $this->thumbnail_dir = '/Applications/XAMPP/xamppfiles/htdocs/boardtest/testing2/uploads/thumbnails/';
 
         // 디렉토리 생성
         if (!is_dir($this->upload_dir)) {
@@ -90,8 +90,10 @@ class MediaHandler
         $thumbnail_path = null;
         if ($file_type === 'image') {
             $thumbnail_path = $this->createImageThumbnail($filepath, $filename);
+            error_log("이미지 썸네일 생성 결과: " . ($thumbnail_path ? $thumbnail_path : "실패"));
         } elseif ($file_type === 'video') {
             $thumbnail_path = $this->createVideoThumbnail($filepath, $filename);
+            error_log("비디오 썸네일 생성 결과: " . ($thumbnail_path ? $thumbnail_path : "실패"));
         }
 
         return [
@@ -128,14 +130,21 @@ class MediaHandler
      */
     private function createImageThumbnail($source_path, $filename)
     {
+        error_log("썸네일 생성 시작 - 원본: $source_path");
+
         $thumbnail_filename = 'thumb_' . $filename;
         $thumbnail_path = $this->thumbnail_dir . $thumbnail_filename;
+
+        error_log("썸네일 저장 경로: $thumbnail_path");
 
         // 이미지 정보 가져오기
         $image_info = getimagesize($source_path);
         if (!$image_info) {
+            error_log("이미지 정보 가져오기 실패: $source_path");
             return null;
         }
+
+        error_log("이미지 정보: " . print_r($image_info, true));
 
         $width = $image_info[0];
         $height = $image_info[1];
@@ -207,7 +216,14 @@ class MediaHandler
         imagedestroy($source);
         imagedestroy($thumbnail);
 
-        return 'uploads/thumbnails/' . $thumbnail_filename;
+        // 썸네일 파일이 실제로 생성되었는지 확인
+        if (file_exists($thumbnail_path)) {
+            error_log("썸네일 생성 성공: uploads/thumbnails/$thumbnail_filename");
+            return 'uploads/thumbnails/' . $thumbnail_filename;
+        } else {
+            error_log("썸네일 파일 생성 실패: $thumbnail_path");
+            return null;
+        }
     }
 
     /**

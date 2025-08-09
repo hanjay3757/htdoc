@@ -10,3 +10,5 @@
 
 <!-- 코드받기   -->
 <!-- 리포지트 (  인용하기  ) -->
+
+tail -f /Applications/XAMPP/xamppfiles/logs/php_error_log

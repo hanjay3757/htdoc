@@ -28,6 +28,8 @@ if (isset($_POST["comment_load_data"])) {
 
             if (mysqli_num_rows($media_result) > 0) {
                 while ($media_row = mysqli_fetch_assoc($media_result)) {
+                    // 디버깅: 미디어 파일 경로 확인
+                    error_log("DB에서 가져온 미디어 파일 정보: " . print_r($media_row, true));
                     $media_files[] = $media_row;
                 }
             }
