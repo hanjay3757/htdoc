@@ -18,7 +18,7 @@ if (isset($_SESSION['status'])) {
         <!-- New Thread Composer -->
         <div class="new-thread">
             <div class="thread-input-area">
-                <img src="https://via.placeholder.com/40" alt="프로필" class="user-avatar">
+                <img src="assets/default-avatar-40.png" alt="프로필" class="user-avatar">
                 <div class="input-wrapper">
                     <textarea class="comment_textbox thread-input" placeholder="무슨 일이 일어나고 있나요?"></textarea>
                     <div class="input-actions">

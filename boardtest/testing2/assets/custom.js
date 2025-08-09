@@ -3,7 +3,7 @@ $(document).ready(function () {
   
   // 전역 변수
   let selectedFiles = [];
-  
+
   // 스레드 입력 영역 포커스 이벤트
   $(".thread-input").focus(function() {
     $(this).closest('.new-thread').addClass('focused');
@@ -60,11 +60,11 @@ $(document).ready(function () {
             
             // 스레드 헤더
             html += '<div class="thread-header">\
-                      <img src="https://via.placeholder.com/40" alt="프로필" class="user-avatar">\
+                      <img src="assets/default-avatar-40.png" alt="프로필" class="user-avatar">\
                       <div class="thread-user-info">\
                         <span class="thread-username">' + (post.fullname || "Unknown User") + '</span>\
                         <span class="thread-time">' + post.created_at + '</span>\
-                      </div>\
+        </div>\
                       <button class="thread-menu">\
                         <i class="fas fa-ellipsis-h"></i>\
                       </button>\
@@ -83,15 +83,21 @@ $(document).ready(function () {
               html += '<div class="thread-media">';
               
               // 미디어 파일이 여러 개인 경우 그리드로 표시
-              if (post.media_files.length > 1) {
-                html += '<div class="media-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px;">';
+              var gridClass = 'media-grid';
+              if (post.media_files.length === 1) {
+                gridClass += ' single-item';
+              } else if (post.media_files.length === 2) {
+                gridClass += ' two-items';
+              } else {
+                gridClass += ' multiple-items';
               }
+              html += '<div class="' + gridClass + '">';
               
               $.each(post.media_files, function(index, media) {
                 console.log("미디어 파일 전체 정보:", media); // 디버깅용
                 
                 if (media.file_type === 'video') {
-                  html += '<video controls class="comment-media-item" data-media-path="' + media.file_path + '" data-media-type="video" style="width: 100%; border-radius: 8px;">\
+                  html += '<video controls class="comment-media-item" data-media-path="' + media.file_path + '" data-media-type="video">\
                             <source src="' + media.file_path + '" type="' + media.mime_type + '">\
                           </video>';
                 } else {
@@ -101,48 +107,36 @@ $(document).ready(function () {
                   console.log("썸네일 경로:", media.thumbnail_path);
                   console.log("최종 사용 경로:", imageSrc);
                   
-                  html += '<img src="' + imageSrc + '" alt="' + (media.original_name || '스레드 이미지') + '" class="comment-media-item" data-media-path="' + media.file_path + '" data-media-type="image" style="width: 100%; border-radius: 8px; cursor: pointer;" onerror="console.log(\'이미지 로드 실패:\', this.src);">';
+                  html += '<img src="' + imageSrc + '" alt="' + (media.original_name || '스레드 이미지') + '" class="comment-media-item" data-media-path="' + media.file_path + '" data-media-type="image" onerror="console.log(\'이미지 로드 실패:\', this.src);">';
                 }
               });
               
-              if (post.media_files.length > 1) {
-                html += '</div>';
-              }
+              html += '</div>'; // media-grid 닫기
               
               html += '</div>';
             }
             
             html += '</div>';
             
-            // 스레드 액션
+            // 스레드 액션 (버튼에 숫자 포함)
             html += '<div class="thread-actions">\
                       <button class="action-button like-btn ' + likedClass + '" data-comment-id="' + post.id + '">\
                         <i class="' + (post.user_liked == 1 ? 'fas' : 'far') + ' fa-heart"></i>\
+                        <span class="action-count">' + (likesCount > 0 ? likesCount : '') + '</span>\
                       </button>\
                       <button class="action-button reply_btn" data-comment-id="' + post.id + '" data-depth="0">\
                         <i class="far fa-comment"></i>\
+                        <span class="action-count">' + (post.children && post.children.length > 0 ? post.children.length : '') + '</span>\
                       </button>\
                       <button class="action-button">\
                         <i class="fas fa-retweet"></i>\
+                        <span class="action-count"></span>\
                       </button>\
                       <button class="action-button">\
                         <i class="far fa-paper-plane"></i>\
+                        <span class="action-count"></span>\
                       </button>\
                     </div>';
-            
-            // 스레드 통계
-            if (likesCount > 0 || (post.children && post.children.length > 0)) {
-              html += '<div class="thread-stats">';
-              var stats = [];
-              if (likesCount > 0) {
-                stats.push(likesCount + '개의 좋아요');
-              }
-              if (post.children && post.children.length > 0) {
-                stats.push(post.children.length + '개의 답글');
-              }
-              html += stats.join(' · ');
-              html += '</div>';
-            }
             
             // 답글 링크 (답글이 있을 때만 표시)
             if (post.children && post.children.length > 0) {
@@ -175,7 +169,7 @@ $(document).ready(function () {
             
             // 답글 헤더
             html += '<div class="reply-header">\
-                      <img src="https://via.placeholder.com/32" alt="프로필" class="reply-avatar">\
+                      <img src="assets/default-avatar-32.png" alt="프로필" class="reply-avatar">\
                       <span class="reply-username">' + (reply.fullname || "Unknown User") + '</span>\
                       <span class="reply-time">' + reply.created_at + '</span>\
                     </div>';
@@ -186,38 +180,57 @@ $(document).ready(function () {
             // 미디어 파일 표시
             if (reply.media_files && reply.media_files.length > 0) {
               $.each(reply.media_files, function(index, media) {
-                if (media.file_type === 'video') {
-                  html += '<video controls style="max-width: 200px; border-radius: 8px; margin: 8px 0 8px 40px; display: block;" class="comment-media-item" data-media-path="' + media.file_path + '" data-media-type="video">\
-                            <source src="' + media.file_path + '" type="' + media.mime_type + '">\
-                          </video>';
-                } else {
-                  var imageSrc = media.thumbnail_path || media.file_path;
-                  html += '<img src="' + imageSrc + '" alt="' + media.original_name + '" style="max-width: 200px; border-radius: 8px; margin: 8px 0 8px 40px; cursor: pointer; display: block;" class="comment-media-item" data-media-path="' + media.file_path + '" data-media-type="image">';
+                  if (media.file_type === 'video') {
+                  html += '<video controls class="comment-media-item" data-media-path="' + media.file_path + '" data-media-type="video">\
+                                  <source src="' + media.file_path + '" type="' + media.mime_type + '">\
+                                </video>';
+                  } else {
+                    var imageSrc = media.thumbnail_path || media.file_path;
+                  html += '<img src="' + imageSrc + '" alt="' + media.original_name + '" class="comment-media-item" data-media-path="' + media.file_path + '" data-media-type="image">';
                 }
               });
             }
             
-            // 답글 액션
+            // 답글 액션 (좋아요 버튼 제거)
             html += '<div class="reply-actions">\
-                      <button class="reply-action-btn like-btn ' + likedClass + '" data-comment-id="' + reply.id + '">\
-                        <i class="' + (reply.user_liked == 1 ? 'fas' : 'far') + ' fa-heart"></i>\
-                        <span>' + (likesCount > 0 ? likesCount : '') + '</span>\
-                      </button>\
-                      <button class="reply-action-btn reply_btn" data-comment-id="' + reply.id + '" data-depth="' + depth + '">\
-                        <i class="far fa-comment"></i>\
-                      </button>\
                     </div>';
+            
+            // 간단한 텍스트 입력창 + 하단 아이콘 바
+            html += '<div class="simple-reply-input">\
+                      <input type="text" class="reply_msg simple-input" placeholder="답글을 입력하세요..." data-parent-id="' + reply.id + '" data-depth="' + (depth + 1) + '" />\
+                      <div class="reply-actions-bar">\
+                        <label class="reply-action-icon" for="simple-media-' + reply.id + '">\
+                          <i class="fas fa-image"></i>\
+                        </label>\
+                        <div class="reply-action-icon">\
+                          <i class="far fa-smile"></i>\
+                        </div>\
+                        <div class="reply-action-icon">\
+                          <i class="fas fa-map-marker-alt"></i>\
+                        </div>\
+                        <div class="reply-action-icon">\
+                          <i class="fas fa-music"></i>\
+                        </div>\
+                        <input type="file" id="simple-media-' + reply.id + '" class="simple-media-input" accept="image/*,video/*,.gif" style="display: none;" multiple />\
+                      </div>\
+                      <div class="simple-media-preview" id="simple-preview-' + reply.id + '"></div>\
+                          </div>';
             
             // 답글 섹션
             html += '<div class="reply_section"></div>';
             
-            // 하위 답글들 (모달에서는 바로 표시)
+            // 하위 답글들이 있으면 컨테이너만 생성 (토글 버튼은 모달에서만 표시)
             if (reply.children && reply.children.length > 0) {
-              html += '<div class="children-container" id="children-' + reply.id + '" style="margin-left: 20px; margin-top: 12px; padding-left: 16px; border-left: 2px solid var(--border-color);">';
+              console.log("답글 ID " + reply.id + "에 " + reply.children.length + "개의 하위 답글이 있음:", reply.children);
+              
+              html += '<div class="children-container" id="nested-children-' + reply.id + '" style="margin-left: 20px; margin-top: 12px; padding-left: 16px; border-left: 2px solid var(--border-color); display: none;">';
               $.each(reply.children, function(index, child) {
+                console.log("하위 답글 렌더링:", child);
                 html += renderReply(child, depth + 1);
               });
               html += '</div>';
+            } else {
+              console.log("답글 ID " + reply.id + "에는 하위 답글이 없음");
             }
             
             html += '</div>';
@@ -334,7 +347,7 @@ $(document).ready(function () {
             closeReplyComposeModal();
           } else {
             // 답글 폼 닫기
-            thisClicked.closest(".reply_section").html("");
+          thisClicked.closest(".reply_section").html("");
           }
           
           load_comment();
@@ -367,19 +380,20 @@ $(document).ready(function () {
           return;
         }
         
-        // 하트 아이콘과 카운트 업데이트
-        var heartIcon = thisClicked.find('.heart-icon');
-        var likeCount = thisClicked.find('.like-count');
+        // 하트 아이콘 업데이트
+        var heartIcon = thisClicked.find('i');
+        var actionCount = thisClicked.find('.action-count');
         
         if (response.liked) {
-          heartIcon.removeClass('unliked-heart').addClass('liked-heart');
+          heartIcon.removeClass('far').addClass('fas');
           thisClicked.addClass('liked');
         } else {
-          heartIcon.removeClass('liked-heart').addClass('unliked-heart');
+          heartIcon.removeClass('fas').addClass('far');
           thisClicked.removeClass('liked');
         }
         
-        likeCount.text(response.likes_count);
+        // 숫자 업데이트
+        actionCount.text(response.likes_count > 0 ? response.likes_count : '');
         
         // 버튼 애니메이션 효과
         thisClicked.addClass('like-animation');
@@ -406,6 +420,11 @@ $(document).ready(function () {
     originalContent.find('.reply_section').remove();
     originalContent.find('.children-container').remove();
     originalContent.find('.thread-replies').remove();
+    originalContent.find('.show_replies_btn').remove();
+    originalContent.find('.thread-actions').remove(); // 액션 버튼들 제거
+    
+    // 원본 포스트가 확실히 보이도록 스타일 추가
+    originalContent.css('display', 'block');
     
     // 답글들 가져오기
     var repliesContent = childrenContainer.html();
@@ -414,8 +433,9 @@ $(document).ready(function () {
     var modalHtml = '<div class="reply-modal" id="reply-modal-' + commentId + '">' +
                     '<div class="reply-modal-content">' +
                     '<div class="reply-modal-header">' +
+                    '<button class="reply-modal-cancel" onclick="closeReplyModal(\'' + commentId + '\')">취소</button>' +
                     '<div class="reply-modal-title">답글</div>' +
-                    '<button class="reply-modal-close" onclick="closeReplyModal(\'' + commentId + '\')">&times;</button>' +
+                    '<button class="reply-modal-more">⋯</button>' +
                     '</div>' +
                     '<div class="reply-modal-body">' +
                     '<div class="original-thread">' + originalContent.prop('outerHTML') + '</div>' +
@@ -426,13 +446,57 @@ $(document).ready(function () {
     
     // 모달을 body에 추가하고 표시
     $('body').append(modalHtml);
-    $('#reply-modal-' + commentId).fadeIn(300);
+    $('body').css('overflow', 'hidden'); // 배경 스크롤 막기
+    
+    // 다른 모든 요소들의 z-index를 강제로 낮춤
+    $('*').not('.reply-modal, .reply-modal *').each(function() {
+      var currentZIndex = $(this).css('z-index');
+      if (currentZIndex !== 'auto' && parseInt(currentZIndex) > 1000) {
+        $(this).data('original-z-index-reply', currentZIndex);
+        $(this).css('z-index', '999');
+      }
+    });
+    
+    $('#reply-modal-' + commentId).css({
+      'display': 'flex',
+      'align-items': 'center',
+      'justify-content': 'center'
+    }).hide().fadeIn(300);
+    
+    // 모달 내에서 토글 버튼 추가
+    $('#reply-modal-' + commentId + ' .children-container').each(function() {
+      var container = $(this);
+      var containerId = container.attr('id');
+      var replyId = containerId.replace('nested-children-', '');
+      var replyCount = container.find('.reply-item').length;
+      
+      if (replyCount > 0) {
+        // 토글 버튼을 컨테이너 바로 앞에 추가
+        var toggleBtn = '<div class="toggle-replies-btn" data-reply-id="' + replyId + '" style="margin: 8px 0; color: var(--text-secondary); font-size: 12px; cursor: pointer;">── 답글 ' + replyCount + '개 보기</div>';
+        container.before(toggleBtn);
+      }
+    });
+    
+    // 모달 내용을 상단으로 스크롤
+    setTimeout(function() {
+      $('#reply-modal-' + commentId + ' .reply-modal-content').scrollTop(0);
+    }, 100);
   });
   
   // 답글 모달 닫기 함수
   window.closeReplyModal = function(commentId) {
     $('#reply-modal-' + commentId).fadeOut(300, function() {
       $(this).remove();
+      $('body').css('overflow', 'auto'); // 배경 스크롤 복원
+      
+      // 원래 z-index 복원
+      $('*').each(function() {
+        var originalZIndex = $(this).data('original-z-index-reply');
+        if (originalZIndex) {
+          $(this).css('z-index', originalZIndex);
+          $(this).removeData('original-z-index-reply');
+        }
+      });
     });
   };
   
@@ -445,12 +509,147 @@ $(document).ready(function () {
     }
   });
 
-  // 답글 달기 버튼 클릭 시 전체 화면 모달 열기
+  // 답글 달기 버튼 클릭 시 처리 (메인 포스트에만)
   $(document).on("click", ".reply_btn", function () {
     var thisClicked = $(this);
     var commentId = thisClicked.data("comment-id");
     var currentDepth = parseInt(thisClicked.data("depth")) || 0;
 
+    // 메인 포스트에서만 모달 열기
+    if (thisClicked.closest('.thread-card').length > 0 && thisClicked.closest('.reply-item').length === 0) {
+      openReplyComposeModal(thisClicked, commentId, currentDepth);
+    }
+    // 답글에서는 아무 동작 안함 (이미 인라인 입력창이 있음)
+  });
+  
+  // 간단한 답글 미디어 파일 선택
+  $(document).on('change', '.simple-media-input', function() {
+    var files = this.files;
+    var replyId = $(this).attr('id').replace('simple-media-', '');
+    var previewContainer = $('#simple-preview-' + replyId);
+    previewContainer.empty();
+    
+    Array.from(files).forEach(function(file, index) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var mediaHtml = '';
+        if (file.type.startsWith('image/')) {
+          mediaHtml = '<img src="' + e.target.result + '" alt="preview">';
+        } else if (file.type.startsWith('video/')) {
+          mediaHtml = '<video src="' + e.target.result + '" muted></video>';
+        }
+        
+        if (mediaHtml) {
+          previewContainer.append('<div class="simple-media-item">' + mediaHtml + '</div>');
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+
+  // 간단한 답글 입력창에서 엔터키 처리
+  $(document).on("keypress", ".simple-input", function(e) {
+    if (e.which === 13) { // 엔터키
+      var thisInput = $(this);
+      var reply = thisInput.val().trim();
+      var parentId = thisInput.data("parent-id");
+      var depth = thisInput.data("depth");
+      
+      // 미디어 파일 가져오기
+      var replyContainer = thisInput.closest('.simple-reply-input');
+      var mediaInput = replyContainer.find('.simple-media-input')[0];
+      var hasFiles = mediaInput && mediaInput.files.length > 0;
+      
+      if (reply === "" && !hasFiles) {
+        alert("답글 내용이나 파일을 입력해주세요.");
+        return;
+      }
+      
+      var formData = new FormData();
+      formData.append('parent_id', parentId);
+      formData.append('msg', reply);
+      formData.append('add_comment', true);
+      
+      // 미디어 파일들 추가
+      if (hasFiles) {
+        Array.from(mediaInput.files).forEach(function(file) {
+          formData.append('media_files[]', file);
+        });
+      }
+      
+      $.ajax({
+        type: "POST",
+        url: "code.php",
+        data: formData,
+        processData: false,
+        contentType: false,
+        dataType: "json",
+        success: function (response) {
+          if (response.success) {
+            alert(response.success);
+            thisInput.val(""); // 입력창 비우기
+            replyContainer.find('.simple-media-preview').empty(); // 미리보기 비우기
+            if (mediaInput) mediaInput.value = ''; // 파일 입력 비우기
+            
+            // 모달 안에서 답글 작성한 경우 모달 내용 업데이트
+            if (thisInput.closest('.reply-modal').length > 0) {
+              var modalId = thisInput.closest('.reply-modal').attr('id');
+              var commentId = modalId.replace('reply-modal-', '');
+              
+              // 모달 닫고 다시 열기로 새로운 데이터 로드
+              closeReplyModal(commentId);
+              setTimeout(function() {
+                $('.show_replies_btn[data-comment-id="' + commentId + '"]').click();
+              }, 100);
+            } else {
+              load_comment(); // 일반 페이지에서는 전체 새로고침
+            }
+          } else if (response.error) {
+            alert(response.error);
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error("답글 추가 실패:", error);
+          alert("답글 추가에 실패했습니다. 다시 시도해주세요.");
+        }
+      });
+    }
+  });
+  
+  // 답글 숨기기/보이기 토글 (모달에서만 생성됨)
+  $(document).on("click", ".toggle-replies-btn", function() {
+    var thisBtn = $(this);
+    var replyId = thisBtn.data("reply-id");
+    var childrenContainer = thisBtn.next('.children-container'); // 바로 다음 형제 요소
+
+    if (childrenContainer.is(":visible")) {
+      // 숨기기
+      childrenContainer.css('display', 'none');
+      thisBtn.html('── 답글 ' + childrenContainer.find('.reply-item').length + '개 보기');
+    } else {
+      // 보이기 - 인라인 스타일로 강제 적용
+      childrenContainer.attr('style', 'margin-left: 20px; margin-top: 12px; padding-left: 16px; border-left: 2px solid var(--border-color); display: block !important; visibility: visible !important; opacity: 1 !important;');
+      
+      // 숨겨진 조상 요소들도 모두 보이게 만들기
+      var hiddenParents = childrenContainer.parents().filter(function() {
+        return $(this).css('display') === 'none' || $(this).css('visibility') === 'hidden';
+      });
+      
+      if (hiddenParents.length > 0) {
+        hiddenParents.each(function() {
+          $(this).css({
+            'display': 'block',
+            'visibility': 'visible'
+          });
+        });
+      }
+      
+      thisBtn.html('── 답글 숨기기');
+    }
+  });
+  
+  // 답글 작성 모달 열기 함수
+  function openReplyComposeModal(thisClicked, commentId, currentDepth) {
     // 원본 포스트 정보 가져오기
     var threadCard = thisClicked.closest('.thread-card, .reply-item');
     var originalPost = threadCard.clone();
@@ -465,46 +664,69 @@ $(document).ready(function () {
     
     // 답글 작성 모달 생성
     var modalHtml = '<div class="reply-compose-modal" id="reply-compose-modal">' +
+                    '<div class="reply-compose-container">' +
                     '<div class="reply-compose-header">' +
+                    '<button class="reply-compose-cancel" onclick="closeReplyComposeModal()">취소</button>' +
                     '<div class="reply-compose-title">답글</div>' +
-                    '<button class="reply-compose-close" onclick="closeReplyComposeModal()">&times;</button>' +
+                    '<button class="reply-compose-more">⋯</button>' +
                     '</div>' +
                     '<div class="reply-compose-body">' +
                     '<div class="original-post-preview">' + originalPost.prop('outerHTML') + '</div>' +
                     '<div class="reply-compose-form">' +
                     '<div class="reply-compose-input-area">' +
-                    '<img src="https://via.placeholder.com/40" alt="프로필" class="user-avatar">' +
+                    '<img src="assets/default-avatar-32.png" alt="프로필" class="user-avatar">' +
                     '<textarea class="reply-compose-textarea reply_msg" placeholder="답글을 입력하세요..."></textarea>' +
                     '</div>' +
-                    '<div class="reply-compose-actions">' +
-                    '<div>' +
-                    '<label for="reply-compose-media" class="reply-compose-media-btn">' +
-                    '<i class="fas fa-image"></i>' +
-                    '</label>' +
-                    '<input type="file" id="reply-compose-media" class="reply-media-input" multiple accept="image/*,video/*,.gif" style="display: none;">' +
                     '</div>' +
+                    '<div class="reply-compose-actions">' +
                     '<button class="reply-compose-submit reply_add_btn" data-parent-id="' + commentId + '" data-depth="' + (currentDepth + 1) + '">게시</button>' +
                     '</div>' +
-                    '<div class="reply-compose-privacy">누구에게나 답글 및 인용 허용</div>' +
-                    '<div class="reply-media-preview"></div>' +
                     '</div>' +
                     '</div>' +
                     '</div>';
 
     // 모달을 body에 추가하고 표시
     $('body').append(modalHtml);
-    $('#reply-compose-modal').fadeIn(300);
+    $('body').css('overflow', 'hidden'); // 배경 스크롤 막기
+    
+    // 다른 모든 요소들의 z-index를 강제로 낮춤
+    $('*').not('.reply-compose-modal, .reply-compose-modal *').each(function() {
+      var currentZIndex = $(this).css('z-index');
+      if (currentZIndex !== 'auto' && parseInt(currentZIndex) > 1000) {
+        $(this).data('original-z-index', currentZIndex);
+        $(this).css('z-index', '999');
+      }
+    });
+    
+    $('#reply-compose-modal').css({
+      'display': 'flex',
+      'align-items': 'center',
+      'justify-content': 'center'
+    }).hide().fadeIn(300);
     
     // 텍스트 영역에 포커스
     setTimeout(function() {
       $('.reply-compose-textarea').focus();
     }, 300);
-  });
+  }
+  
+
+
   
   // 답글 작성 모달 닫기 함수
   window.closeReplyComposeModal = function() {
     $('#reply-compose-modal').fadeOut(300, function() {
       $(this).remove();
+      $('body').css('overflow', 'auto'); // 배경 스크롤 복원
+      
+      // 원래 z-index 복원
+      $('*').each(function() {
+        var originalZIndex = $(this).data('original-z-index');
+        if (originalZIndex) {
+          $(this).css('z-index', originalZIndex);
+          $(this).removeData('original-z-index');
+        }
+      });
     });
   };
   
