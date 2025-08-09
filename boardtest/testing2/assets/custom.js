@@ -1,8 +1,13 @@
 $(document).ready(function () {
   load_comment();
+  loadCurrentUserProfile();
   
   // 전역 변수
   let selectedFiles = [];
+  let currentUserProfile = {
+    fullname: '',
+    profile_image: 'assets/default-avatar-40.png'
+  };
 
   // 스레드 입력 영역 포커스 이벤트
   $(".thread-input").focus(function() {
@@ -56,11 +61,14 @@ $(document).ready(function () {
             var likedClass = post.user_liked == 1 ? 'liked' : '';
             var likesCount = post.likes_count || 0;
             
+            // 프로필 이미지 결정
+            var profileImage = post.profile_image || 'assets/default-avatar-40.png';
+            
             var html = '<div class="thread-card" data-comment-id="' + post.id + '">';
             
             // 스레드 헤더
             html += '<div class="thread-header">\
-                      <img src="assets/default-avatar-40.png" alt="프로필" class="user-avatar">\
+                      <img src="' + profileImage + '" alt="프로필" class="user-avatar">\
                       <div class="thread-user-info">\
                         <span class="thread-username">' + (post.fullname || "Unknown User") + '</span>\
                         <span class="thread-time">' + post.created_at + '</span>\
@@ -165,11 +173,14 @@ $(document).ready(function () {
             var likedClass = reply.user_liked == 1 ? 'liked' : '';
             var likesCount = reply.likes_count || 0;
             
+            // 프로필 이미지 결정 (작은 사이즈)
+            var profileImage = reply.profile_image || 'assets/default-avatar-32.png';
+            
             var html = '<div class="reply-item" data-comment-id="' + reply.id + '" data-depth="' + depth + '">';
             
             // 답글 헤더
             html += '<div class="reply-header">\
-                      <img src="assets/default-avatar-32.png" alt="프로필" class="reply-avatar">\
+                      <img src="' + profileImage + '" alt="프로필" class="reply-avatar">\
                       <span class="reply-username">' + (reply.fullname || "Unknown User") + '</span>\
                       <span class="reply-time">' + reply.created_at + '</span>\
                     </div>';
@@ -674,7 +685,7 @@ $(document).ready(function () {
                     '<div class="original-post-preview">' + originalPost.prop('outerHTML') + '</div>' +
                     '<div class="reply-compose-form">' +
                     '<div class="reply-compose-input-area">' +
-                    '<img src="assets/default-avatar-32.png" alt="프로필" class="user-avatar">' +
+                    '<img src="' + (currentUserProfile.profile_image || 'assets/default-avatar-32.png') + '" alt="프로필" class="user-avatar">' +
                     '<textarea class="reply-compose-textarea reply_msg" placeholder="답글을 입력하세요..."></textarea>' +
                     '</div>' +
                     '</div>' +
@@ -868,4 +879,93 @@ $(document).ready(function () {
       },
     });
   });
+
+  // 현재 사용자 프로필 정보 로드
+  function loadCurrentUserProfile() {
+    $.ajax({
+      url: "code.php",
+      method: "POST",
+      data: {
+        get_user_profile: 1
+      },
+      dataType: "json",
+      success: function(response) {
+        if (response.success) {
+          currentUserProfile.fullname = response.fullname;
+          currentUserProfile.profile_image = response.profile_image;
+          
+          // 메인 입력창의 아바타 업데이트
+          $('.new-thread .user-avatar').attr('src', currentUserProfile.profile_image);
+        }
+      },
+      error: function(xhr, status, error) {
+        console.log("프로필 로드 실패:", error);
+      }
+    });
+  }
+
+  // 프로필 이미지 업로드 기능
+  $(document).on('click', '#profile-avatar', function() {
+    $('#profile-image-input').click();
+  });
+
+  $(document).on('change', '#profile-image-input', function() {
+    var file = this.files[0];
+    if (!file) return;
+
+    // 파일 크기 체크 (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      showProfileUploadStatus('파일 크기가 너무 큽니다 (최대 5MB)', 'error');
+      return;
+    }
+
+    // 이미지 파일 체크
+    if (!file.type.startsWith('image/')) {
+      showProfileUploadStatus('이미지 파일만 업로드 가능합니다', 'error');
+      return;
+    }
+
+    var formData = new FormData();
+    formData.append('profile_image', file);
+    formData.append('upload_profile_image', 1);
+
+    $.ajax({
+      url: 'code.php',
+      method: 'POST',
+      data: formData,
+      processData: false,
+      contentType: false,
+      dataType: 'json',
+      success: function(response) {
+        if (response.success) {
+          // 프로필 이미지 업데이트
+          currentUserProfile.profile_image = response.profile_image;
+          $('#profile-avatar').attr('src', response.profile_image);
+          
+          showProfileUploadStatus('프로필 이미지가 업데이트되었습니다!', 'success');
+          
+          // 파일 입력 초기화
+          $('#profile-image-input').val('');
+        } else {
+          showProfileUploadStatus(response.error || '업로드 실패', 'error');
+        }
+      },
+      error: function(xhr, status, error) {
+        showProfileUploadStatus('업로드 중 오류가 발생했습니다', 'error');
+      }
+    });
+  });
+
+  // 프로필 업로드 상태 메시지 표시
+  function showProfileUploadStatus(message, type) {
+    var statusDiv = $('#profile-upload-status');
+    statusDiv.removeClass('success error show');
+    statusDiv.addClass(type);
+    statusDiv.text(message);
+    statusDiv.addClass('show');
+    
+    setTimeout(function() {
+      statusDiv.removeClass('show');
+    }, 3000);
+  }
 });

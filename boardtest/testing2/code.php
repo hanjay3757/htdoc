@@ -2,12 +2,13 @@
 session_start();
 include("dbcon.php");
 include("utils/media_handler.php");
+include("utils/profile_handler.php");
 
 if (isset($_POST["comment_load_data"])) {
     $user_id = isset($_SESSION['auth_user_id']) ? $_SESSION['auth_user_id'] : 0;
 
-    // 댓글과 좋아요 정보, 미디어 파일을 함께 가져오기
-    $comments_query = "SELECT c.*, u.fullname, c.likes_count,
+    // 댓글과 좋아요 정보, 미디어 파일, 프로필 이미지를 함께 가져오기
+    $comments_query = "SELECT c.*, u.fullname, u.profile_image, c.likes_count,
                        CASE WHEN cl.user_id IS NOT NULL THEN 1 ELSE 0 END as user_liked
                        FROM comments c 
                        LEFT JOIN users u ON c.user_id = u.id 
@@ -201,4 +202,65 @@ if (isset($_POST['toggle_like'])) {
         'liked' => $liked,
         'likes_count' => (int)$count_row['likes_count']
     ]);
+}
+
+// 프로필 이미지 업로드 처리
+if (isset($_POST["upload_profile_image"])) {
+    if (!isset($_SESSION['auth_user_id'])) {
+        echo json_encode(['success' => false, 'error' => '로그인이 필요합니다']);
+        exit;
+    }
+
+    $user_id = $_SESSION['auth_user_id'];
+
+    if (!isset($_FILES['profile_image']) || $_FILES['profile_image']['error'] !== UPLOAD_ERR_OK) {
+        echo json_encode(['success' => false, 'error' => '파일이 선택되지 않았습니다']);
+        exit;
+    }
+
+    $profile_handler = new ProfileHandler();
+    $result = $profile_handler->uploadProfileImage($_FILES['profile_image'], $user_id);
+
+    if ($result['success']) {
+        // 데이터베이스에 프로필 이미지 경로 업데이트
+        $file_path = mysqli_real_escape_string($con, $result['file_path']);
+        $update_query = "UPDATE users SET profile_image = '$file_path', profile_image_updated_at = NOW() WHERE id = '$user_id'";
+
+        if (mysqli_query($con, $update_query)) {
+            echo json_encode([
+                'success' => true,
+                'message' => '프로필 이미지가 업데이트되었습니다',
+                'profile_image' => $result['file_path']
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'error' => '데이터베이스 업데이트 실패']);
+        }
+    } else {
+        echo json_encode($result);
+    }
+}
+
+// 현재 사용자 프로필 정보 가져오기
+if (isset($_POST["get_user_profile"])) {
+    if (!isset($_SESSION['auth_user_id'])) {
+        echo json_encode(['success' => false, 'error' => '로그인이 필요합니다']);
+        exit;
+    }
+
+    $user_id = $_SESSION['auth_user_id'];
+    $query = "SELECT fullname, profile_image FROM users WHERE id = '$user_id'";
+    $result = mysqli_query($con, $query);
+
+    if ($result && mysqli_num_rows($result) > 0) {
+        $user = mysqli_fetch_assoc($result);
+        $profile_image = ProfileHandler::getUserProfileImage($user_id, $user['profile_image']);
+
+        echo json_encode([
+            'success' => true,
+            'fullname' => $user['fullname'],
+            'profile_image' => $profile_image
+        ]);
+    } else {
+        echo json_encode(['success' => false, 'error' => '사용자 정보를 찾을 수 없습니다']);
+    }
 }

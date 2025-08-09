@@ -25,25 +25,149 @@ body {
   padding: 0;
 }
 
-/* Main App Container */
+/* Main App Container - Threads Layout */
 .threads-app {
   min-height: 100vh;
   background: var(--bg-color);
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
+/* Left Sidebar */
+.sidebar {
+  width: 80px;
+  min-height: 100vh;
+  background: var(--bg-color);
+  padding: 20px 0;
+  position: fixed;
+  left: calc(50% - 600px);
+  top: 0;
+  z-index: 100;
 }
+
+.sidebar-header {
+  padding: 0 0 30px;
+  text-align: center;
+}
+
+.threads-logo {
+  font-size: 24px;
+  color: var(--text-primary);
+}
+
+.sidebar-nav {
+  padding: 0;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  margin: 8px 12px;
+  border-radius: 12px;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-size: 16px;
+}
+
+.nav-item span {
+  display: none;
+}
+
+.nav-item:hover {
+  background: var(--border-color);
+}
+
+.nav-item.active {
+  background: var(--border-color);
+  font-weight: 600;
+}
+
+.nav-item i {
+  font-size: 24px;
+  width: 24px;
+  text-align: center;
+}
+
+.sidebar-footer {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  padding: 0;
+}
+
+/* Main Content Area */
+.main-content {
+  width: 600px;
+  margin: 0 auto;
+  border-left: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+}
+
+.top-header {
+  position: sticky;
+  top: 0;
+  background: rgba(16, 16, 16, 0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0;
+  z-index: 50;
+}
+
+.header-tabs {
+  display: flex;
+  width: 100%;
+}
+
+.tab-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 16px;
+  font-weight: 600;
+  padding: 16px 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.tab-btn:hover {
+  color: var(--text-primary);
+}
+
+.tab-btn.active {
+  color: var(--text-primary);
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--text-primary);
+}
+
+.feed-container {
+  padding: 0;
+}
+
+/* Right Sidebar - 제거됨 */
 
 /* New Thread Composer */
 .new-thread {
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 20px;
+  background: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
+  padding: 20px 24px;
 }
 
 .thread-input-area {
@@ -58,6 +182,78 @@ body {
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
+}
+
+/* 프로필 이미지 업로드 UI */
+.profile-upload-trigger {
+  cursor: pointer;
+  position: relative;
+  transition: opacity 0.2s ease;
+}
+
+.profile-upload-trigger:hover {
+  opacity: 0.8;
+}
+
+.profile-upload-trigger::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.profile-upload-trigger:hover::after {
+  opacity: 1;
+}
+
+.profile-upload-trigger:hover::before {
+  content: '📷';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+#profile-image-input {
+  display: none;
+}
+
+/* 프로필 업로드 상태 메시지 */
+.profile-upload-status {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  z-index: 10000;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s ease;
+}
+
+.profile-upload-status.success {
+  background: #4caf50;
+}
+
+.profile-upload-status.error {
+  background: #f44336;
+}
+
+.profile-upload-status.show {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .input-wrapper {
@@ -176,20 +372,18 @@ body {
 .feed {
   display: flex;
   flex-direction: column;
-  gap: 20px;
 }
 
 /* Thread Card */
 .thread-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 20px;
+  background: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
+  padding: 20px 24px;
   transition: all 0.2s ease;
 }
 
 .thread-card:hover {
-  border-color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .thread-header {
@@ -980,38 +1174,69 @@ body {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
-  .container {
-    padding: 10px;
+@media (max-width: 1200px) {
+  .threads-app {
     max-width: 100%;
+    padding: 0 20px;
+  }
+  
+  .sidebar {
+    left: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .threads-app {
+    padding: 0;
+  }
+  
+  .sidebar {
+    left: 0;
+    width: 60px;
+  }
+  
+  .sidebar-nav .nav-item,
+  .sidebar-footer .nav-item {
+    margin: 4px 8px;
+    padding: 12px;
+  }
+  
+  .main-content {
+    width: 100%;
+    border-left: none;
+    border-right: none;
+  }
+  
+  .tab-btn {
+    padding: 12px 16px;
+    font-size: 14px;
   }
   
   .new-thread,
   .thread-card {
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-    margin-left: -10px;
-    margin-right: -10px;
-  }
-  
-  .thread-content,
-  .thread-actions,
-  .reply-link {
-    padding-left: 40px;
-  }
-  
-  .thread-replies {
-    padding-left: 40px;
-  }
-  
-  .reply-content,
-  .reply-actions {
-    padding-left: 32px;
+    padding: 16px 20px;
   }
 }
 
 @media (max-width: 480px) {
+  .sidebar {
+    display: none;
+  }
+  
+  .main-content {
+    width: 100%;
+  }
+  
+  .tab-btn {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+  
+  .new-thread,
+  .thread-card {
+    padding: 12px 16px;
+  }
+  
   .thread-input-area {
     gap: 8px;
   }
