@@ -59,33 +59,38 @@ if (isset($_SESSION['status'])) {
     <div class="main-content">
         <!-- Top Header -->
         <div class="top-header">
-            <div class="header-tabs">
-                <button class="tab-btn active">추천</button>
-                <button class="tab-btn">팔로잉</button>
+            <div class="header-content">
+                <div></div> <!-- 왼쪽 공간 -->
+                <div class="feed-selector">
+                    <button class="feed-dropdown-btn" id="feed-dropdown">
+                        <span class="current-feed">추천</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="feed-dropdown-menu" id="feed-dropdown-menu">
+                        <div class="feed-option active" data-feed="recommend">추천</div>
+                        <div class="feed-option" data-feed="following">팔로잉</div>
+                    </div>
+                </div>
+                <div></div> <!-- 오른쪽 공간 -->
             </div>
         </div>
 
         <!-- Main Feed Container -->
         <div class="feed-container">
-            <!-- New Thread Composer -->
-            <div class="new-thread">
-                <div class="thread-input-area">
+            <!-- New Thread Trigger -->
+            <div class="new-thread-trigger">
+                <div class="thread-trigger-area">
                     <img src="assets/default-avatar-40.png" alt="프로필" class="user-avatar profile-upload-trigger" id="profile-avatar">
                     <input type="file" id="profile-image-input" accept="image/*">
-                    <div class="input-wrapper">
-                        <textarea class="comment_textbox thread-input" placeholder="무슨 일이 일어나고 있나요?"></textarea>
-                        <div class="input-actions">
-                            <label for="media-files" class="attach-btn">
-                                <i class="fas fa-image"></i>
-                            </label>
-                            <input type="file" id="media-files" multiple accept="image/*,video/*,.gif" style="display: none;">
-                            <button class="post-btn add_comment_btn">게시</button>
-                        </div>
+                    <div class="trigger-input" id="open-post-modal">
+                        <span class="trigger-placeholder">무슨 일이 일어나고 있나요?</span>
                     </div>
+                    <button class="trigger-post-btn" id="trigger-post-btn">게시</button>
                 </div>
-                <div id="media-preview" class="media-preview"></div>
-                <div id="error_status" class="error-msg"></div>
             </div>
+
+            <!-- Status Messages -->
+            <div id="error_status" class="error-msg" style="margin: 0 24px;"></div>
 
             <!-- Threads Feed -->
             <div class="comment-container feed"></div>
