@@ -9,21 +9,30 @@ $(document).ready(function () {
     profile_image: 'assets/default-avatar-40.png'
   };
 
-  // 헤더 스크롤 효과 - feed-container 스크롤 감지
+  // 헤더 스크롤 효과 - 스크롤 다운 시에만 fixed
+  let lastScrollTop = 0;
+  
   setTimeout(function() {
-    $('.feed-container').scroll(function() {
+    $(window).scroll(function() {
       let scrollTop = $(this).scrollTop();
-      console.log('피드 컨테이너 스크롤:', scrollTop);
       
-      if (scrollTop > 50) { // 50px 이상 스크롤 시
-        console.log('헤더 고정 모드');
-        $('.header-content').addClass('scrolling');
-      } else {
-        console.log('헤더 원래 위치 복원');
-        $('.header-content').removeClass('scrolling');
+      if (scrollTop > lastScrollTop && scrollTop > 0) {
+        // 스크롤 다운 중인 경우
+        $('.top-header').addClass('fixed');
+        $('.feed-container').addClass('header-fixed');
+      } else if (scrollTop < lastScrollTop && scrollTop > 0) {
+        // 스크롤 업 중인 경우 - 헤더가 따라옴
+        $('.top-header').addClass('fixed');
+        $('.feed-container').addClass('header-fixed');
+      } else if (scrollTop <= 0) {
+        // 최상단에 도달한 경우만 원래 위치로
+        $('.top-header').removeClass('fixed');
+        $('.feed-container').removeClass('header-fixed');
       }
+      
+      lastScrollTop = scrollTop;
     });
-  }, 100);
+  }, 200);
 
   // 스레드 입력 영역 포커스 이벤트
   $(".thread-input").focus(function() {

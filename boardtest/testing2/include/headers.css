@@ -118,10 +118,20 @@ body {
   background: rgba(16, 16, 16, 0.8);
   backdrop-filter: blur(20px);
   padding: 0;
-  /* header가 feed-container와 함께 스크롤되도록 sticky 제거 */
+  /* 기본 상태는 relative, 스크롤 다운 시 fixed로 변경 */
+}
+
+.top-header.fixed {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 680px;
+  z-index: 999;
 }
 
 .header-content {
+  
   display: flex;
   justify-content: center;
   align-items: center;
@@ -130,18 +140,7 @@ body {
   transition: all 0.3s ease; /* 부드러운 전환 */
 }
 
-/* 스크롤 시 고정 상태 */
-.header-content.scrolling {
-  position: fixed;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 614px;
-  background: var(--bg-color);
-  backdrop-filter: blur(20px);
-  z-index: 1001;
-  border-bottom: 1px solid var(--border-color);
-}
+
 
 .feed-selector {
   position: relative;
@@ -234,6 +233,10 @@ body {
   position: relative;
   overflow: hidden;
   border: #1c1c1c 1px solid;
+}
+
+.feed-container.header-fixed {
+  margin-top: 70px; /* 헤더가 fixed일 때만 여백 추가 */
 }
 
 /* 컨테이너 밖 아치형 오버레이 - 공통 */
@@ -1453,6 +1456,12 @@ body {
     border-right: none;
   }
 
+  .top-header.fixed {
+    width: 100%;
+    left: 0;
+    transform: none;
+  }
+
   .tab-btn {
     padding: 12px 16px;
     font-size: 14px;
@@ -1471,6 +1480,12 @@ body {
 
   .main-content {
     width: 100%;
+  }
+
+  .top-header.fixed {
+    width: 100%;
+    left: 0;
+    transform: none;
   }
 
   .tab-btn {
