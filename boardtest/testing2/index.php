@@ -76,27 +76,34 @@ if (isset($_SESSION['status'])) {
             </div>
         </div>
 
+        <!-- 컨테이너 밖 아치형 오버레이 -->
+        <div class="arch-overlay left-arch"></div>
+        <div class="arch-overlay right-arch"></div>
+
         <!-- Main Feed Container -->
         <div class="feed-container">
-            <!-- New Thread Trigger -->
-            <div class="new-thread-trigger">
-                <div class="thread-trigger-area">
-                    <img src="assets/default-avatar-40.png" alt="프로필" class="user-avatar profile-upload-trigger" id="profile-avatar">
-                    <input type="file" id="profile-image-input" accept="image/*">
-                    <div class="trigger-input" id="open-post-modal">
-                        <span class="trigger-placeholder">무슨 일이 일어나고 있나요?</span>
+            <!-- Feed Content Wrapper -->
+            <div class="feed-content">
+                <!-- New Thread Trigger -->
+                <div class="new-thread-trigger">
+                    <div class="thread-trigger-area">
+                        <img src="assets/default-avatar-40.png" alt="프로필" class="user-avatar profile-upload-trigger" id="profile-avatar">
+                        <input type="file" id="profile-image-input" accept="image/*">
+                        <div class="trigger-input" id="open-post-modal">
+                            <span class="trigger-placeholder">무슨 일이 일어나고 있나요?</span>
+                        </div>
+                        <button class="trigger-post-btn" id="trigger-post-btn">게시</button>
                     </div>
-                    <button class="trigger-post-btn" id="trigger-post-btn">게시</button>
                 </div>
-            </div>
 
-            <!-- Status Messages -->
-            <div id="error_status" class="error-msg" style="margin: 0 24px;"></div>
+                <!-- Status Messages -->
+                <div id="error_status" class="error-msg" style="margin: 0 24px;"></div>
 
-            <!-- Threads Feed -->
-            <div class="comment-container feed"></div>
-        </div>
-    </div>
+                <!-- Threads Feed -->
+                <div class="comment-container feed"></div>
+            </div> <!-- feed-content 닫기 -->
+        </div> <!-- feed-container 닫기 -->
+    </div> <!-- main-content 닫기 -->
 
 
 </div>

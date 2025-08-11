@@ -9,6 +9,22 @@ $(document).ready(function () {
     profile_image: 'assets/default-avatar-40.png'
   };
 
+  // 헤더 스크롤 효과 - feed-container 스크롤 감지
+  setTimeout(function() {
+    $('.feed-container').scroll(function() {
+      let scrollTop = $(this).scrollTop();
+      console.log('피드 컨테이너 스크롤:', scrollTop);
+      
+      if (scrollTop > 50) { // 50px 이상 스크롤 시
+        console.log('헤더 고정 모드');
+        $('.header-content').addClass('scrolling');
+      } else {
+        console.log('헤더 원래 위치 복원');
+        $('.header-content').removeClass('scrolling');
+      }
+    });
+  }, 100);
+
   // 스레드 입력 영역 포커스 이벤트
   $(".thread-input").focus(function() {
     $(this).closest('.new-thread').addClass('focused');
@@ -82,6 +98,9 @@ $(document).ready(function () {
     $("#feed-dropdown-menu").removeClass('show');
     $("#feed-dropdown").removeClass('open');
   });
+
+  // border-radius 오버레이는 항상 표시되어 스크롤 시 콘텐츠를 가림
+  // 별도의 JavaScript 제어 불필요 - CSS로 항상 활성화됨
 
   // 추천 피드 로드 (모든 게시물)
   function loadRecommendedFeed() {

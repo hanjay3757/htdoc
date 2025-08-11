@@ -14,10 +14,12 @@
   --accent-color: #ffffff;
   --blue: #0095f6;
   --heart: #ed4956;
+
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
   background-color: var(--bg-color);
   color: var(--text-primary);
   line-height: 1.5;
@@ -44,13 +46,14 @@ body {
   background: var(--bg-color);
   padding: 20px 0;
   position: fixed;
-  left: calc(50% - 600px);
+  /* left: calc(50% - 700px); */
+  left: 0;
   top: 0;
   z-index: 100;
 }
 
 .sidebar-header {
-  padding: 0 0 30px;
+  padding: 0 0 110px;
   text-align: center;
 }
 
@@ -67,13 +70,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 14px;
   margin: 8px 12px;
   border-radius: 12px;
-  color: var(--text-primary);
+  color: #4d4d4d;
   text-decoration: none;
   transition: all 0.2s ease;
-  font-size: 16px;
 }
 
 .nav-item span {
@@ -82,11 +84,11 @@ body {
 
 .nav-item:hover {
   background: var(--border-color);
+  color: #4d4d4d;
 }
 
 .nav-item.active {
-  background: var(--border-color);
-  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .nav-item i {
@@ -105,20 +107,18 @@ body {
 
 /* Main Content Area */
 .main-content {
-  width: 600px;
+  width: 680px;
   margin: 0 auto;
-  border-left: 1px solid var(--border-color);
-  border-right: 1px solid var(--border-color);
+  position: relative;
+  overflow: hidden;
 }
 
 .top-header {
-  position: sticky;
-  top: 0;
+  position: relative;
   background: rgba(16, 16, 16, 0.8);
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border-color);
   padding: 0;
-  z-index: 50;
+  /* header가 feed-container와 함께 스크롤되도록 sticky 제거 */
 }
 
 .header-content {
@@ -127,6 +127,20 @@ body {
   align-items: center;
   padding: 16px 24px;
   position: relative;
+  transition: all 0.3s ease; /* 부드러운 전환 */
+}
+
+/* 스크롤 시 고정 상태 */
+.header-content.scrolling {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 614px;
+  background: var(--bg-color);
+  backdrop-filter: blur(20px);
+  z-index: 1001;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .feed-selector {
@@ -153,7 +167,12 @@ body {
 }
 
 .feed-dropdown-btn i {
-  font-size: 12px;
+  border: 1px solid var(--border-color);
+  background: #1c1c1c;
+  padding: 4px;
+  border-radius: 50%;
+  top: 80%;
+  font-size: 10px;
   transition: transform 0.2s ease;
 }
 
@@ -208,24 +227,83 @@ body {
   font-weight: 600;
 }
 
-
-
 .feed-container {
+  background: #181818;
   padding: 0;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  border: #1c1c1c 1px solid;
+}
+
+/* 컨테이너 밖 아치형 오버레이 - 공통 */
+.arch-overlay {
+  position: fixed; /* 스크롤 시 따라다니게 */
+  top: 70px;
+  width: 55px;
+  height: 30px;
+  background: #0f0f0f;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* 왼쪽 아치 */
+.left-arch {
+  left: calc(50% - 367px); /* 컨테이너 왼쪽 가장자리 */
+}
+
+/* 오른쪽 아치 */
+.right-arch {
+  right: calc(50% - 367px); /* 컨테이너 오른쪽 가장자리 */
+}
+
+/* 왼쪽 아치 - 안쪽으로 파인 효과 (오른쪽 아래) */
+.left-arch::after {
+  content: "";
+  position: absolute;
+  bottom: 0px;
+  right: 0;
+  width: 27px;
+  height: 28px;
+  background: #181818;
+  border-radius: 40px 0 0 0;
+  border-top: 1px solid var(--border-color);
+  border-left: 1px solid var(--border-color);
+}
+
+/* 오른쪽 아치 - 안쪽으로 파인 효과 (왼쪽 아래) */
+.right-arch::after {
+  content: "";
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+  width: 27px;
+  height: 28px;
+  background: #181818;
+  border-radius: 0 40px 0 0;
+  border-top: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+}
+
+/* 피드 내용 - 오버레이 아래로 스크롤 */
+.feed-content {
+  position: relative;
+  z-index: 1;
+  /* 오버레이 아래로 스크롤되도록 설정 */
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 /* Right Sidebar - 제거됨 */
 
 /* New Thread Trigger */
 .new-thread-trigger {
-  background: var(--bg-color);
   border-bottom: 1px solid var(--border-color);
   padding: 20px 24px;
 }
 
 .thread-trigger-area {
   display: flex;
-  gap: 12px;
   align-items: center;
 }
 
@@ -244,20 +322,16 @@ body {
 }
 
 .trigger-post-btn {
-  background: var(--accent-color);
-  color: var(--bg-color);
-  border: none;
-  border-radius: 20px;
+  background: #1c1c1c;
+  color: #f5f5f5;
+  border: 1px solid var(--border-color);
+  border-radius: 0px;
   padding: 8px 20px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-left: 12px;
-}
-
-.trigger-post-btn:hover {
-  background: #e6e6e6;
+  margin-left: 130px;
 }
 
 .trigger-placeholder {
@@ -290,7 +364,8 @@ body {
   max-width: 500px;
   max-height: 80vh;
   overflow: hidden;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
   position: relative;
   z-index: 2147483647;
   margin: auto;
@@ -376,7 +451,7 @@ body {
 }
 
 .profile-upload-trigger::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -394,7 +469,7 @@ body {
 }
 
 .profile-upload-trigger:hover::before {
-  content: '📷';
+  content: "📷";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -557,21 +632,15 @@ body {
 
 /* Thread Card */
 .thread-card {
-  background: var(--bg-color);
   border-bottom: 1px solid var(--border-color);
   padding: 20px 24px;
   transition: all 0.2s ease;
-}
-
-.thread-card:hover {
-  background: rgba(255, 255, 255, 0.02);
 }
 
 .thread-header {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  margin-bottom: 12px;
 }
 
 .thread-user-info {
@@ -608,7 +677,6 @@ body {
 }
 
 .thread-content {
-  margin-bottom: 12px;
   padding-left: 52px;
 }
 
@@ -616,7 +684,6 @@ body {
   color: var(--text-primary);
   font-size: 15px;
   line-height: 1.4;
-  margin-bottom: 12px;
   word-wrap: break-word;
 }
 
@@ -663,7 +730,6 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 8px;
-  margin: 12px 0;
   max-width: 500px;
 }
 
@@ -695,8 +761,7 @@ body {
   padding-left: 52px;
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 8px;
+  gap: 12px;
 }
 
 .action-button {
@@ -973,8 +1038,9 @@ body {
   width: 90%;
   max-width: 500px;
   max-height: 70vh;
-    overflow: hidden;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
   position: relative;
   z-index: 2147483647;
   margin: auto;
@@ -1004,13 +1070,13 @@ body {
   background: none;
   border: none;
   color: var(--text-secondary);
-    font-size: 16px;
+  font-size: 16px;
   cursor: pointer;
   padding: 8px 12px;
   border-radius: 8px;
   transition: all 0.2s ease;
-    font-weight: 400;
-  }
+  font-weight: 400;
+}
 
 .reply-compose-cancel:hover {
   background: rgba(255, 255, 255, 0.1);
@@ -1113,12 +1179,12 @@ body {
 .reply-compose-submit {
   background: var(--accent-color);
   color: var(--bg-color);
-    border: none;
+  border: none;
   border-radius: 20px;
   padding: 8px 20px;
   font-size: 14px;
   font-weight: 600;
-    cursor: pointer;
+  cursor: pointer;
   transition: all 0.2s ease;
   min-width: 60px;
 }
@@ -1136,7 +1202,7 @@ body {
 /* 간단한 답글 입력창 */
 .simple-reply-input {
   margin: 8px 0 8px 40px; /* 왼쪽에 여백을 줘서 들여쓰기 */
-    padding: 8px 0;
+  padding: 8px 0;
 }
 
 .simple-input {
@@ -1169,7 +1235,7 @@ body {
 
 .reply-action-icon {
   color: var(--text-secondary);
-    cursor: pointer;
+  cursor: pointer;
   padding: 4px;
   border-radius: 4px;
   transition: color 0.2s ease;
@@ -1192,7 +1258,7 @@ body {
   max-width: 60px;
   max-height: 60px;
   border-radius: 4px;
-    object-fit: cover;
+  object-fit: cover;
 }
 
 /* 답글 숨기기/보이기 버튼 */
@@ -1209,8 +1275,6 @@ body {
   color: var(--text-color);
 }
 
-
-
 .reply-modal-content {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
@@ -1221,7 +1285,8 @@ body {
   overflow-y: auto;
   position: relative;
   z-index: 2147483647;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
   margin: auto;
   flex-shrink: 0;
 }
@@ -1233,7 +1298,7 @@ body {
   justify-content: space-between;
   align-items: center;
   position: sticky;
-    top: 0;
+  top: 0;
   background: var(--card-bg);
   backdrop-filter: blur(10px);
   z-index: 1;
@@ -1275,9 +1340,9 @@ body {
   transition: all 0.2s ease;
   width: 32px;
   height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .reply-modal-more:hover {
@@ -1309,49 +1374,49 @@ body {
 }
 
 /* Media Modal */
-  .media-modal {
-    position: fixed;
-    top: 0;
+.media-modal {
+  position: fixed;
+  top: 0;
   left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
   z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  }
+}
 
-  .media-modal-content {
-    max-width: 90vw;
-    max-height: 90vh;
-    border-radius: 12px;
-    overflow: hidden;
+.media-modal-content {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 12px;
+  overflow: hidden;
   position: relative;
-  }
+}
 
-  .media-modal img,
-  .media-modal video {
-    max-width: 100%;
-    max-height: 90vh;
-    display: block;
-  }
+.media-modal img,
+.media-modal video {
+  max-width: 100%;
+  max-height: 90vh;
+  display: block;
+}
 
-  .media-modal-close {
-    position: absolute;
+.media-modal-close {
+  position: absolute;
   top: 16px;
   right: 16px;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    border: none;
-    border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
   width: 32px;
   height: 32px;
   font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Responsive Design */
@@ -1360,7 +1425,7 @@ body {
     max-width: 100%;
     padding: 0 20px;
   }
-  
+
   .sidebar {
     left: 20px;
   }
@@ -1370,29 +1435,29 @@ body {
   .threads-app {
     padding: 0;
   }
-  
+
   .sidebar {
     left: 0;
     width: 60px;
   }
-  
+
   .sidebar-nav .nav-item,
   .sidebar-footer .nav-item {
     margin: 4px 8px;
     padding: 12px;
   }
-  
+
   .main-content {
     width: 100%;
     border-left: none;
     border-right: none;
   }
-  
+
   .tab-btn {
     padding: 12px 16px;
     font-size: 14px;
   }
-  
+
   .new-thread,
   .thread-card {
     padding: 16px 20px;
@@ -1403,45 +1468,45 @@ body {
   .sidebar {
     display: none;
   }
-  
+
   .main-content {
     width: 100%;
   }
-  
+
   .tab-btn {
     padding: 12px 16px;
     font-size: 14px;
   }
-  
+
   .new-thread,
   .thread-card {
     padding: 12px 16px;
   }
-  
+
   .thread-input-area {
     gap: 8px;
   }
-  
+
   .user-avatar {
     width: 32px;
     height: 32px;
   }
-  
+
   .reply-avatar {
     width: 28px;
     height: 28px;
   }
-  
+
   .thread-content,
   .thread-actions,
   .reply-link {
     padding-left: 32px;
   }
-  
+
   .thread-replies {
     padding-left: 32px;
   }
-  
+
   .reply-content,
   .reply-actions {
     padding-left: 24px;
@@ -1449,16 +1514,49 @@ body {
 }
 
 /* Utility Classes */
-.d-none { display: none !important; }
-.d-flex { display: flex !important; }
-.align-items-center { align-items: center !important; }
-.justify-content-between { justify-content: space-between !important; }
-.gap-2 { gap: 8px !important; }
-.mb-2 { margin-bottom: 8px !important; }
-.mb-3 { margin-bottom: 12px !important; }
-.mt-2 { margin-top: 8px !important; }
-.text-muted { color: var(--text-secondary) !important; }
-.btn-sm { padding: 4px 8px !important; font-size: 12px !important; }
-.btn-outline-warning { background: none !important; border: 1px solid #ffc107 !important; color: #ffc107 !important; }
-.btn-outline-info { background: none !important; border: 1px solid var(--blue) !important; color: var(--blue) !important; }
-.btn-outline-secondary { background: none !important; border: 1px solid var(--border-color) !important; color: var(--text-primary) !important; }
+.d-none {
+  display: none !important;
+}
+.d-flex {
+  display: flex !important;
+}
+.align-items-center {
+  align-items: center !important;
+}
+.justify-content-between {
+  justify-content: space-between !important;
+}
+.gap-2 {
+  gap: 8px !important;
+}
+.mb-2 {
+  margin-bottom: 8px !important;
+}
+.mb-3 {
+  margin-bottom: 12px !important;
+}
+.mt-2 {
+  margin-top: 8px !important;
+}
+.text-muted {
+  color: var(--text-secondary) !important;
+}
+.btn-sm {
+  padding: 4px 8px !important;
+  font-size: 12px !important;
+}
+.btn-outline-warning {
+  background: none !important;
+  border: 1px solid #ffc107 !important;
+  color: #ffc107 !important;
+}
+.btn-outline-info {
+  background: none !important;
+  border: 1px solid var(--blue) !important;
+  color: var(--blue) !important;
+}
+.btn-outline-secondary {
+  background: none !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
